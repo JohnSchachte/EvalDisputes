@@ -63,10 +63,8 @@ constructor(storage,rootKey){
         this.storage.set(this.rootKey+"state",newState);
     }
     deconstructTree(){
-        this.storage.remove(this.rootKey+"state");
-        for(let child of this.children){
-            child.deconstruct();
-        }
+      this.storage.remove(this.rootKey+"state");
+      this.children.forEach(child => child.deconstruct());
     }
 }
   

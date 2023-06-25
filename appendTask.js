@@ -101,9 +101,8 @@ class Task {
 }
 
 class TimeoutTask extends Task {
-    constructor(parents, children, baseKey,storage,timeout=null) {
-        super(parents, children, baseKey,storage);
-        timeout? this.setTimeout(new Date().getTime()+timeout):false;
+    constructor(name,process, taskKey,storage) {
+      super(name,process, taskKey,storage);
     }
 
     setTriggerSelf(key = this.taskKey) {

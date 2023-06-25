@@ -42,3 +42,9 @@ function testSiblings(){
   if(hasCoachingBackend.getStateSelf() !== "approved")throw new Error("wrong state from what was set");
   if(hasCoachingBackend.checkNeighborsState(hasCoachingBackend.siblings,"approved")) throw new Error("siblings somehow has approved state");
 }
+
+function testDeconstruction(){
+  const process = mkProcess("1000");
+  process.deconstructTree();
+
+}
