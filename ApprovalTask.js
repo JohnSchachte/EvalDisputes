@@ -9,7 +9,7 @@ class ApprovalTask extends Task{
             if(child instanceof TimeoutTask){
                 child.setTimeout(fiveMins);
             }
-            if(child.getState() === "stopped"){
+            if(child.getStateSelf() === "stopped"){
                 child.setTriggerSelf();
                 child.updateState("pending");
             }

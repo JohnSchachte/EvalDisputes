@@ -58,7 +58,7 @@ class Task {
     }
   
     getStateSelf() {
-      this.storage.get(this.baseKey+"state");
+      return this.storage.get(this.baseKey+"state");
     }
   
     onSuccess() {
@@ -77,12 +77,14 @@ class Task {
     }
 
     checkNeighborsState(neighbors,state){
-        for(let neighbor of neighbors){
-            if(neighbor.getState() !== state){
-                return false;
-            }
+      let result = true;
+      neighbors.forEach(neighbor => {
+        Logger.log(neighbor)
+        if (neighbor.getStateSelf() !== state) {
+          result = false;
         }
-        return true;
+      });
+      return result;
     }
 
     deconstructNeighbors(neighbors,condition = (neighbor)=>true){
