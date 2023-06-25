@@ -54,11 +54,11 @@ class Task {
     }
   
     updateSelfState(newState) {
-      this.storage.set(this.baseKey+"state",newState);
+      this.storage.set(this.taskKey+"state",newState);
     }
   
     getStateSelf() {
-      return this.storage.get(this.baseKey+"state");
+      return this.storage.get(this.taskKey+"state");
     }
   
     onSuccess() {
@@ -79,7 +79,8 @@ class Task {
     checkNeighborsState(neighbors,state){
       let result = true;
       neighbors.forEach(neighbor => {
-        Logger.log(neighbor)
+        Logger.log(neighbor.getStateSelf());
+        Logger.log(neighbor.getName());
         if (neighbor.getStateSelf() !== state) {
           result = false;
         }
