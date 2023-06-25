@@ -185,12 +185,8 @@ class TimeoutTask extends Task {
 }
 
 class AppendBackend extends TimeoutTask {
-    constructor(name,process,){
-        // const children = new Map(childrenNames.map(name =>[name,process.children.get(name)]));
-        // const parents = new Map(parentNames.map(name =>[name,process.children.get(name)]));
-        // const siblings = new Map(siblingNames.map(name =>[name,process.children.get(name)]));
-        
-        super(name,process,JSON.stringify([name,process.rootKey]),new Storage(),process);
+    constructor(name,process){
+        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
     }
 
     checkTimeout(currentTimeout,newTimeout){
@@ -267,8 +263,8 @@ class AppendBackend extends TimeoutTask {
 }
 
 class SendApproval extends TimeoutTask {
-    constructor(name,process,parentNames,childrenNames,siblingNames){
-        super(name,process,parentNames,childrenNames,siblingNames,JSON.stringify([name,process.rootKey]),new Storage(),process);
+    constructor(name,process){
+        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
     }
 
     
@@ -301,8 +297,8 @@ class SendApproval extends TimeoutTask {
 }
 
 class SendManagementEmail extends TimeoutTask {
-    constructor(name,process,parentNames,childrenNames,siblingNames){
-        super(name,process,parentNames,childrenNames,siblingNames,JSON.stringify([name,process.rootKey]),new Storage(),process);
+    constructor(name,process){
+        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
     }
     
     checkTimeout(currentTimeout,newTimeout){
@@ -375,8 +371,8 @@ class SendManagementEmail extends TimeoutTask {
 }
 
 class SendDenied extends Task{
-    constructor(name,process,parentNames,childrenNames,siblingNames){
-        super(name,process,parentNames,childrenNames,siblingNames,JSON.stringify([name,process.rootKey]),new Storage(),process);
+    constructor(name,process){
+        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
     }
 
     run(email,reason){
@@ -397,5 +393,8 @@ class SendDenied extends Task{
     onSuccess(message){
         this.logSelf(message);
         this.deconstruct();
+    }
+    deconstruct(){
+        return null;
     }
 }
