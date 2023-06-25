@@ -7,6 +7,8 @@ class Task {
       this.storage = storage;
       this.taskKey = taskKey;
       this.process = process;
+      this.ss =  SpreadsheetApp.openById(BACKEND_ID); // make this the id of the spreadsheet of information
+
     }
     
     getName(){return this.name;}
@@ -166,7 +168,7 @@ class TimeoutTask extends Task {
         Logger.log(message);
         // kill all downstream processes
         this.updateNeighborsState("killed",this.children);
-        const errorQueue = globals.ss.getSheetByName("Errors");
+        const errorQueue = this.ss.getSheetByName("Errors");
         // apppend itself and all downstream processes
         errorQueue.appendRow(this.taskKey);
         for(let child of this.children){
@@ -176,7 +178,7 @@ class TimeoutTask extends Task {
         const task = JSON.parse(this.taskKey);
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);
-        globals.ss.getSheetByName("Error_Log").appendRow(task);
+        this.ss.getSheetByName("Error_Log").appendRow(task);
     }
 }
 
@@ -198,7 +200,7 @@ class AppendBackend extends TimeoutTask {
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
-        globals.ss.getSheetByName("Backend_Log").appendRow(task);
+        this.ss.getSheetByName("Backend_Log").appendRow(task);
     }
 
     onSuccess(message){
@@ -287,7 +289,7 @@ class SendApproval extends TimeoutTask {
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
-        globals.ss.getSheetByName("Email_Log").appendRow(task);
+        this.ss.getSheetByName("Email_Log").appendRow(task);
     }
 
     onSuccess(message){
@@ -360,7 +362,7 @@ class SendManagementEmail extends TimeoutTask {
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
-        globals.ss.getSheetByName("Email_Log").appendRow(task);
+        this.ss.getSheetByName("Email_Log").appendRow(task);
     }
     
     onSuccess(message){
@@ -386,8 +388,8 @@ class SendDenied extends Task{
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
-        globals.ss.getSheetByName("Email_Log").appendRow(task);
-        globals.ss.getSheetByName("Denied_Log").appendRow(task);
+        this.ss.getSheetByName("Email_Log").appendRow(task);
+        this.ss.getSheetByName("Denied_Log").appendRow(task);
     }
     
     onSuccess(message){
