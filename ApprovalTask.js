@@ -36,7 +36,7 @@ class ApprovalTask extends Task{
         const task = JSON.parse(this.taskKey);
         task.push(!message);
         task.push(new Date().toLocaleString());
-        globals.ss.getSheetByName("Approval_Log").appendRow(task);
+        ss.getSheetByName("Approval_Log").appendRow(task);
     }
 
     // ... implement other methods ...
@@ -46,10 +46,10 @@ class ApprovalTask extends Task{
             // was approved
             
             // store state
-            this.updateState("approved");
+            this.updateStateSelf("approved");
 
             // check approval and if children statuses need reboot.
-            const isApproved = this.checkSiblingsState("approved");
+            const isApproved = this.checkNeighborsState(this.siblings,"approved");
             //both are approved so reboot children to make sure everything goes as planned.
             if(isApproved){
                 this.updateProcess("approved") //whole task is approved. this will signal running processes to go forward.
@@ -73,7 +73,7 @@ class ApprovalTask extends Task{
         Logger.log(message);
         // kill all downstream processes
         this.updateNeighborsState("killed",this.children);
-        const errorQueue = globals.ss.getSheetByName("Errors");
+        const errorQueue = ss.getSheetByName("Errors");
         // apppend itself and all downstream processes
         errorQueue.appendRow(this.taskKey);
         for(let child of this.children){
@@ -83,7 +83,7 @@ class ApprovalTask extends Task{
         const task = JSON.parse(this.taskKey);
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);
-        globals.ss.getSheetByName("Error_Log").appendRow(task);
+        ss.getSheetByName("Error_Log").appendRow(task);
     }
 }
 
