@@ -19,8 +19,9 @@ class TimeoutTask extends Task {
     }
     setTimeout(newTimeout){
         const currentTimeout = this.getTimeout();
-        if(!currentTimeout || this.checkTimeout(currentTimeout,newTimeout)){
-            this.process.storage.set(this.taskKey+"timeout",newTimeout);
+        const set = this.checkTimeout(currentTimeout,newTimeout); // returns thing to set or false;
+        if(set){
+            this.process.storage.set(this.taskKey+"timeout",set);
             return true;
         }
         return false;

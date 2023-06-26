@@ -6,7 +6,10 @@ class AppendBackend extends TimeoutTask {
     }
 
     checkTimeout(currentTimeout,newTimeout){
-        return newTimeout > currentTimeout;
+        const rn = new Date().getTime();
+        const proposed = rn + newTimeout;
+        if(!currentTimeout || proposed > currentTimeout) return proposed.toString(); // there isn't one then return proposed
+        return false;
     }
 
     logSelf(message){
