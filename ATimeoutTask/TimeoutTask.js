@@ -13,7 +13,7 @@ class TimeoutTask extends Task {
     }
 
     getTimeout(){
-        const timeout = this.process.storage.get(this.key+"timeout");
+        const timeout = this.process.storage.get(this.taskKey+"timeout");
         if(timeout)return parseInt(timeout);
         return null;
     }
