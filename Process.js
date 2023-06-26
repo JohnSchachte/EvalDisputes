@@ -4,17 +4,17 @@ function mkProcess(rootKey,) {
   const process = new Process(storage, rootKey);
 
   // first depth
-  const hasCoachingBackend = new HasCoachingBackend("hasCoachingBackend", process, storage);
-  const checkEvalId = new CheckEvalId("checkEvalId", process, storage);
+  const hasCoachingBackend = new HasCoachingBackend("hasCoachingBackend", process);
+  const checkEvalId = new CheckEvalId("checkEvalId", process);
   children.set(hasCoachingBackend.name, hasCoachingBackend);
   children.set(checkEvalId.name, checkEvalId);
   hasCoachingBackend.setSibling(checkEvalId);
   checkEvalId.setSibling(hasCoachingBackend);
 
   // second depth
-  const appendBackend = new AppendBackend("appendBackend", process, storage);
-  const sendApproval = new SendApproval("sendApproval", process, storage);
-  const sendDenied = new SendDenied("sendDenied", process, storage);
+  const appendBackend = new AppendBackend("appendBackend", process);
+  const sendApproval = new SendApproval("sendApproval", process);
+  const sendDenied = new SendDenied("sendDenied", process);
   children.set(appendBackend.name, appendBackend);
   children.set(sendApproval.name, sendApproval);
   children.set(sendDenied.name, sendDenied);
@@ -27,7 +27,7 @@ function mkProcess(rootKey,) {
   sendDenied.setSiblings([appendBackend, sendApproval]);
 
   // third depth
-  const sendManagementEmail = new SendManagementEmail("sendManagementEmail", process, storage);
+  const sendManagementEmail = new SendManagementEmail("sendManagementEmail", process);
   children.set(sendManagementEmail.name, sendManagementEmail);
   appendBackend.setChild(sendManagementEmail);
 
@@ -46,7 +46,7 @@ class Process {
   getNode(name){
     return this.children ? this.children.get(name) : null;
   }
-  
+
   setTree(tree){
     this.children = tree; 
   }
