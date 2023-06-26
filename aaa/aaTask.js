@@ -12,7 +12,7 @@ class Task {
     }
 
     getNode(name){
-        return this.children.get(name);
+      return (this.children.get(name) || this.siblings.get(name) || this.parents.get(name));
     }
     
     getName(){return this.name;}

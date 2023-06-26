@@ -33,7 +33,8 @@ class TimeoutTask extends Task {
 
     
     deconstruct(){
-        this.storage.remove(this.taskKey);
+        this.storage.remove(this.taskKey+"state");
+        this.storage.remove(this.taskKey+"timeout");
     }
 
     wait(targetState,delay = 500){

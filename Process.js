@@ -35,36 +35,32 @@ function mkProcess(rootKey,) {
   return process;
 }
 
-function testProcess(){
-  const process = mkProcess("1")
-  for (let [name, task] of process.children.entries()) {
-    console.log(`Task name: ${name}`);
-    console.log(`Task parents: ${[...task.parents.keys()].join(', ')}`);
-    console.log(`Task children: ${[...task.children.keys()].join(', ')}`);
-    console.log(`Task siblings: ${[...task.siblings.keys()].join(', ')}`);
-    console.log('---');
-  }
-}
-
 
 class Process {
-constructor(storage,rootKey){
+  constructor(storage,rootKey){
     this.storage = storage;
     this.rootKey = rootKey;
     this.children;
-}
-    setTree(tree){
+  }
+  
+  getNode(name){
+    return (this.children.get(name) || this.siblings.get(name) || this.parents.get(name));
+  }
+  setTree(tree){
     this.children = tree; 
-    }
-    getState(){
+  }
+  
+  getState(){
         return this.storage.get(this.rootKey+"state");
-    }
-    setState(newState){
+  }
+  
+  setState(newState){
         this.storage.set(this.rootKey+"state",newState);
-    }
-    deconstructTree(){
+  }
+  
+  deconstructTree(){
       this.storage.remove(this.rootKey+"state");
       this.children.forEach(child => child.deconstruct());
-    }
+  }
 }
   
