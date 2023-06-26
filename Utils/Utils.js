@@ -133,6 +133,39 @@ function deconstructBackend(task){
   scriptProp.deleteProperty(JSON.stringify(task));
 }
 
+
+function mkCaseArray(submitRow,colMap, evalType){
+  const row = new Array(11);
+  row[1] = submitRow[colMap.get("Timestamp")];
+  row[5] = submitRow[colMap.get(evalType === "phone" ? "What is the Record Id for the Evaluation" : "What is the Chat Id for the Evaluation")];
+  row[6] = CoachingRequestScripts.getTicketNumber(submitRow[colMap.get("Ticket Number?")],submitRow[colMap.get("Do you have a Ticket Number?")].startsWith("Y"));
+  row[7] = "High"; //because they want these processed with 24hrs
+  row[8] = `Evaluation Dispute : ${submitRow[colMap.get("What is your reason for disputing?")]}`; // category field
+  row[10] = submitRow[colMap.get("Add any related files you'd like to share")];
+  return row;
+}
+
+function formatAdditionalComments(submitRow,colMap,relAgent,evalDate){
+  let additionalContext = "";
+  if(!BAD_VALUES.has(submitRow[colMap.get("What is your reason for disputing?")])){
+    additionalContext += submitRow[colMap.get("What is your reason for disputing?")];
+  }
+  if(!BAD_VALUES.has(submitRow[colMap.get("SOP or KB article?")])){
+    additionalContext += ": "+submitRow[colMap.get("SOP or KB article?")];
+  }
+  if(relAgent){
+    additionalContext += "\nReliability Agent: "+relAgent; 
+  }
+  if(evalDate){
+    additionalContext+= "\nEvaluation Date: " + evalDate;
+  }
+
+  if(!BAD_VALUES.has(submitRow[colMap.get("Additional Comments")])){
+    additionalContext += "\n\nAdditional Comments: "+submitRow[colMap.get("Additional Comments")];
+  }
+  return additionalContext;
+}
+
 function getHttp(team,cache){
   const getTeams = Custom_Utilities.memoize( () => CoachingRequestScripts.getTeams(REPORTING_ID),cache);
   const teams = getTeams();
