@@ -15,7 +15,7 @@ class Task {
       this.name = name;
       this.taskKey = taskKey;
       this.process = process;
-      this.ss =  SpreadsheetApp.openById(BACKEND_ID); // make this the id of the spreadsheet of information
+      this.ss =  SpreadsheetApp.openById(BACKEND_ID_TEST); // make this the id of the spreadsheet of information
 
     }
   /**
