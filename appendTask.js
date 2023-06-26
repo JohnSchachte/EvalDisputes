@@ -1,188 +1,4 @@
-class Task {
-    constructor(name,process,taskKey,storage) {
-    //   this.parents = new Map();
-      this.children = new Map();
-      this.siblings = new Map();
-      this.name = name;
-      this.storage = storage;
-      this.taskKey = taskKey;
-      this.process = process;
-      this.ss =  SpreadsheetApp.openById(BACKEND_ID); // make this the id of the spreadsheet of information
 
-    }
-    
-    getName(){return this.name;}
-
-    setSibling(node){
-      Logger.log("setting %s as sibling to %s",node.getName(),this.name)
-      this.siblings.set(node.getName(),node);
-    }
-
-    setChild(node){
-      this.children.set(node.getName(),node);
-    }
-
-    setSiblings(nodes){
-      for(let node of nodes){
-        this.setSibling(node);
-      }
-    }
-
-    setChildren(nodes){
-      for(let node of nodes){
-        this.setChild(node);
-      }
-    }
-
-    updateProcess(state){
-        this.process.setState(state);
-    }
-
-    setTriggerSelf() {
-      // Implement this method in child classes
-      throw new Error('You have to implement the method setTriggerSelf!');
-    }
-  
-    fireTriggerSelf() {
-      // Implement this method in child classes
-      throw new Error('You have to implement the method fireTriggerSelf!');
-    }
-  
-    logSelf() {
-      // Implement this method in child classes
-      throw new Error('You have to implement the method logSelf!');
-    }
-  
-    updateSelfState(newState) {
-      this.storage.set(this.taskKey+"state",newState);
-    }
-  
-    getStateSelf() {
-      return this.storage.get(this.taskKey+"state");
-    }
-  
-    onSuccess() {
-      // Implement this method in child classes
-      throw new Error('You have to implement the method onSuccess!');
-    }
-  
-    onFailure() {
-      // Implement this method in child classes
-      throw new Error('You have to implement the method onFailure!');
-    }
-
-    deconstruct(){
-        //Implement this in child classes
-        throw new Error('You have to implement the method deconstruct!');
-    }
-
-    checkNeighborsState(neighbors,state){
-      let result = true;
-      neighbors.forEach(neighbor => {
-        Logger.log(neighbor.getStateSelf());
-        Logger.log(neighbor.getName());
-        if (neighbor.getStateSelf() !== state) {
-          result = false;
-        }
-      });
-      return result;
-    }
-
-    deconstructNeighbors(neighbors,condition = (neighbor)=>true){
-        for(let neighbor of neighbors){
-            if(condition(neighbor)) neighbor.deconstruct();
-        }
-    }
-
-    run(){
-        //Implement this in child classes
-        throw new Error('You have to implement the method run!');
-    }
-}
-
-class TimeoutTask extends Task {
-    constructor(name,process, taskKey,storage) {
-      super(name,process, taskKey,storage);
-    }
-
-    setTriggerSelf(key = this.taskKey) {
-        // Specific implementation for SpecificTask
-        setTrigger(key);
-    }
-  
-    fireTriggerSelf(){
-        Custom_Utilities.fireTrigger();
-    }
-
-    getTimeout(){
-        const timeout = this.storage.get(this.key+"timeout");
-        if(timeout)return parseInt(timeout);
-        return null;
-    }
-    setTimeout(newTimeout){
-        const currentTimeout = this.getTimeout();
-        if(!currentTimeout || this.checkTimeout(currentTimeout,newTimeout)){
-            this.storage.set(this.key+"timeout",newTimeout);
-            return true;
-        }
-        return false;
-    }
-
-    checkTimeout(){
-        //Implement this in child classes
-        throw new Error('You have to implement the method checkTimeout!');
-    }
-
-    
-    deconstruct(){
-        this.storage.remove(this.taskKey);
-    }
-
-    wait(processStatus){
-        const startTime = new Date().getTime();
-        const maxTime = startTime + 3*300000;
-        let state = this.process.getState();
-        let rn = new Date().getTime();
-        while(state !== processStatus && rn < maxTime && rn < this.getTimeout() && 
-            state !== "denied" || state !== "killed"){
-            Utilities.sleep(500);
-            processStatus = this.process.getState();
-            rn = new Date().getTime();
-        }
-        return state;
-    }
-
-    rebootChildren(){
-        const fiveMins = new Date().getTime() + 300000;
-        for(let child of this.children){
-            if(child instanceof TimeoutTask){
-                child.setTimeout(fiveMins);
-            }
-            if(child.getState() === "stopped"){
-                child.setTriggerSelf();
-                child.updateState("pending");
-            }
-        }
-        Custom_Utilities.fireTrigger(); // fires all the triggers that were just set.
-    }
-
-    onFailure(message){
-        Logger.log(message);
-        // kill all downstream processes
-        this.updateNeighborsState("killed",this.children);
-        const errorQueue = this.ss.getSheetByName("Errors");
-        // apppend itself and all downstream processes
-        errorQueue.appendRow(this.taskKey);
-        for(let child of this.children){
-            errorQueue.appendRow(child.taskKey);
-        }
-        Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
-        const task = JSON.parse(this.taskKey);
-        task.push(new Date().toLocaleString());// col 4 should be the date update column
-        task.push(message);
-        this.ss.getSheetByName("Error_Log").appendRow(task);
-    }
-}
 
 class AppendBackend extends TimeoutTask {
     constructor(name,process){
@@ -202,16 +18,25 @@ class AppendBackend extends TimeoutTask {
     }
 
     onSuccess(message){
-        if(message){
+        // case one run returns void -> do nothing and deconstruct
+        // case two run returns a message of denied -> deconstruct
+        // case three
+        if(message == "approved"){
+            // success
             this.updateProcess("appended");
             this.rebootChildren();
             this.logSelf(message);
+            this.updateSelfState("success");
+        }else if(message = "killed"){
+            // parent errored and killed all children.
+            this.updateSelfState("stopped");
         }
-        this.deconstruct();
+        // tree was deconstructed
     }
 
     run(){
         Logger.log(this.rootKey);
+        this.updateSelfState("running");
         //do this before the check. Usually waiting 3-5 seconds anyways.
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID,`Submissions!${this.rootKey}:${this.rootKey}`).values[0];
@@ -255,44 +80,10 @@ class AppendBackend extends TimeoutTask {
         requestOptions["payload"] = JSON.stringify(caseArray); // prepare for request
         const resultState = this.wait("approved");
         if(resultState != "approved"){
-            return false;
+            return resultState;
         }
         const response = CoachingRequestScripts.fetchWithOAuth(endPoint,requestOptions); //parsed json.
         return response["id"]; // return id
-    }
-}
-
-class SendApproval extends TimeoutTask {
-    constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
-    }
-
-    
-    checkTimeout(currentTimeout,newTimeout){
-        return newTimeout > currentTimeout;
-    }
-
-    run(){
-        const reader = Custom_Utilities.getMemoizedReads(cache);
-        const formResponse = reader(BACKEND_ID,`Submissions!${this.rootKey}:${this.rootKey}`).values[0]; 
-        const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
-        const template = HtmlService.createTemplateFromFile("Approved");
-      
-        sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sent to Supervisor",template);
-        return true;
-    }
-
-    logSelf(message){
-        // false means approval
-        const task = JSON.parse(this.taskKey);
-        task.push(message);
-        task.push(new Date().toLocaleString());
-        this.ss.getSheetByName("Email_Log").appendRow(task);
-    }
-
-    onSuccess(message){
-        this.logSelf(message);
-        this.deconstruct();
     }
 }
 
@@ -306,6 +97,7 @@ class SendManagementEmail extends TimeoutTask {
     }
 
     run(){
+        this.updateSelfState("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID,`Submissions!${this.rootKey}:${this.rootKey}`).values[0];
         const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
@@ -325,13 +117,11 @@ class SendManagementEmail extends TimeoutTask {
         }
 
         caseArray[9] = formatAdditionalComments(formResponse,colMap,idObject[0],idObject[1]); //caseArray is fully complete
-        
         caseArray[2] = agentObject["Employee Name"];
         caseArray[3] = agentObject["SUPERVISOR"];
         caseArray[4] = agentObject["Email Address"]; //submitter
         
-        
-        
+        // for template vars
         const vars = {
             agentName : agentObject["Employee Name"],
             id : caseArray[5],
@@ -350,8 +140,9 @@ class SendManagementEmail extends TimeoutTask {
         
         const resultState = this.wait("appended");
         if(resultState != "appended"){
-            return false;
+            return resultState;
         }
+
         sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         return true;
     }
@@ -364,37 +155,15 @@ class SendManagementEmail extends TimeoutTask {
     }
     
     onSuccess(message){
-        this.logSelf(message);
-        this.deconstruct();
-        this.process.deconstructTree();
+        if(message === true){
+            this.logSelf(message);
+            this.deconstruct();
+            this.process.deconstructTree(); // process is done!
+        }else if(message == "killed"){
+            this.updateSelfState("stopped");
+        }
+        // tree was deconstructed
     }
 }
 
-class SendDenied extends Task{
-    constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
-    }
 
-    run(email,reason){
-        const template = HtmlService.createTemplateFromFile("DeniedEmail");
-        template.denialReason = reason;
-        sendEmail(email,"Evaluation Dispute Denied",template);
-        return true;
-    }
-
-    logSelf(message){
-        const task = JSON.parse(this.taskKey);
-        task.push(message);
-        task.push(new Date().toLocaleString());
-        this.ss.getSheetByName("Email_Log").appendRow(task);
-        this.ss.getSheetByName("Denied_Log").appendRow(task);
-    }
-    
-    onSuccess(message){
-        this.logSelf(message);
-        this.deconstruct();
-    }
-    deconstruct(){
-        return null;
-    }
-}
