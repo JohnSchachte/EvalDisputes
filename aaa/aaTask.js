@@ -64,7 +64,7 @@ class Task {
       for(let node of nodes){
         this.setChild(node);
       }
-    }.
+    }
  /**
   * Updates the state of the process.
   * @param {string} state - The new state.
