@@ -35,11 +35,11 @@ class AppendBackend extends TimeoutTask {
     }
 
     run(){
-        Logger.log(this.rootKey);
+        Logger.log(this.process.rootKey);
         this.updateSelfState("running");
         //do this before the check. Usually waiting 3-5 seconds anyways.
         const reader = Custom_Utilities.getMemoizedReads(cache);
-        const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.rootKey}:${this.rootKey}`).values[0];
+        const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];
         const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
       
         

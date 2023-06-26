@@ -11,7 +11,7 @@ class SendApproval extends TimeoutTask {
     run(){
         this.updateSelfState("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
-        const formResponse = reader(BACKEND_ID,`Submissions!${this.rootKey}:${this.rootKey}`).values[0]; 
+        const formResponse = reader(BACKEND_ID,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
         const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
         const template = HtmlService.createTemplateFromFile("Approved");
         const resultState = this.wait("approved");
