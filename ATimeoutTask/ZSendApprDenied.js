@@ -14,7 +14,10 @@ class SendApproval extends TimeoutTask {
         const formResponse = reader(BACKEND_ID,`Submissions!${this.rootKey}:${this.rootKey}`).values[0]; 
         const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
         const template = HtmlService.createTemplateFromFile("Approved");
-        
+        const resultState = this.wait("approved");
+        if(resultState != "approved"){
+            return resultState;
+        }
         sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sent to Supervisor",template);
         return true;
     }
