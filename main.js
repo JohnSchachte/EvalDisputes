@@ -30,9 +30,10 @@ function startSendManagement(e){
 
 function initiateTask(e){
   if(e) Custom_Utilities.deleteSelfTrigger(e,ScriptApp);
-  const jobs = getJobs();
+  // const jobs = getJobs();
   const task = JSON.parse(cache.get(e.triggerUid));
-  Custom_Utilities.getTaskManager(jobs,[task]).executeTask(task);
+  Logger.log(task);
+  // Custom_Utilities.getTaskManager(jobs,[task]).executeTask(task);
 }
 
 function doErrors(e){

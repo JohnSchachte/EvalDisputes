@@ -45,7 +45,11 @@ class TimeoutTask extends Task {
             processState !== "denied" && this.getStateSelf() !== "killed"){
             Utilities.sleep(delay);
             processState = this.process.getState();
+            Logger.log("waiting");
         }
+        let rn = new Date().getTime();
+        let timeout = this.getTimeout();
+        let stateSelf = this.getStateSelf();
         // if(!processState || processState === "denied") this.deconstruct(); // free all memory. Parent deconstructs tree but I'm worried this process may have saved state.
         return stateSelf === "killed" || new Date() > this.getTimeout() ? stateSelf : processState;
     }

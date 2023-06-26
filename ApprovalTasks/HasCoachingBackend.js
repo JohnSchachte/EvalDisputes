@@ -4,6 +4,7 @@ class HasCoachingBackend extends ApprovalTask {
     }
 
     run(){
+        Logger.log(this.process.rootKey);
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
         const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);

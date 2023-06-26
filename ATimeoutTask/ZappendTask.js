@@ -1,5 +1,3 @@
-
-
 class AppendBackend extends TimeoutTask {
     constructor(name,process){
         super(name,process,JSON.stringify([name,process.rootKey]));
@@ -29,17 +27,17 @@ class AppendBackend extends TimeoutTask {
             this.updateProcess("appended");
             this.rebootChildren();
             this.logSelf(message);
-            this.updateSelfState("success");
+            this.updateStateSelf("success");
         }else if(message = "killed"){
             // parent errored and killed all children.
-            this.updateSelfState("stopped");
+            this.updateStateSelf("stopped");
         }
         // tree was deconstructed
     }
 
     run(){
         Logger.log(this.process.rootKey);
-        this.updateSelfState("running");
+        this.updateStateSelf("running");
         //do this before the check. Usually waiting 3-5 seconds anyways.
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];

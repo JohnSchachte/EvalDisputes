@@ -49,3 +49,17 @@ function testHasBackendDenied(){
     if(result[0] != "foo@shift4.com") throw new Error("not correct result");
     Logger.log(result[1]);
 }
+
+function hasBackendOnSuccess(){
+    const process = mkProcess("41");
+    const hasBackend = process.getNode("hasCoachingBackend");
+    const result = hasBackend.run();
+    hasBackend.onSuccess(result);
+}
+
+function hasCheckEvalIdOnSuccess(){
+  const process = mkProcess("41");
+  const checkEvalId = process.getNode("checkEvalId");
+  const result = checkEvalId.run();
+  checkEvalId.onSuccess(result);
+}

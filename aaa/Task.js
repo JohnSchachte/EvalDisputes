@@ -97,7 +97,7 @@ class Task {
   * Updates the state of the task.
   * @param {string} newState - The new state.
   */
-    updateSelfState(newState) {
+    updateStateSelf(newState) {
       this.process.storage.set(this.taskKey+"state",newState);
     }
    /**

@@ -9,7 +9,7 @@ class SendApproval extends TimeoutTask {
     }
 
     run(){
-        this.updateSelfState("running");
+        this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
         const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
@@ -40,6 +40,15 @@ class SendApproval extends TimeoutTask {
 class SendDenied extends Task{
     constructor(name,process){
         super(name,process,JSON.stringify([name,process.rootKey]));
+    }
+
+    setTriggerSelf(key = this.taskKey) {
+        // Specific implementation for SpecificTask
+        setTrigger(key);
+    }
+  
+    fireTriggerSelf(){
+        Custom_Utilities.fireTrigger();
     }
 
     run(email,reason){

@@ -5,15 +5,17 @@ class ApprovalTask extends Task{
 
     rebootChildren(){
         const fiveMins = new Date().getTime() + 300000;
-        for(let child of this.children){
+        this.children.forEach(child => {
             if(child instanceof TimeoutTask){
                 child.setTimeout(fiveMins);
             }
-            if(child.getStateSelf() === "stopped"){
+            let childState = child.getStateSelf()
+            if(!childState || childState === "stopped"){
                 child.setTriggerSelf();
-                child.updateState("pending");
+                child.updateStateSelf("pending");
+                Logger.log("set = %s trigger",child.getName());
             }
-        }
+        });
         Custom_Utilities.fireTrigger(); // fires all the triggers that were just set.
     }
 
