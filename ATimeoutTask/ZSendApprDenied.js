@@ -72,6 +72,6 @@ class SendDenied extends Task{
         this.deconstruct();
     }
     deconstruct(){
-        return null;
+      this.process.storage.remove(this.taskKey+"state");
     }
 }

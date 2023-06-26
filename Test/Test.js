@@ -44,7 +44,7 @@ function testSiblings(){
 }
 
 function testDeconstruction(){
-  const process = mkProcess("1000");
+  const process = mkProcess("41");
   process.deconstructTree();
 
 }
