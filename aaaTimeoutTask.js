@@ -73,12 +73,12 @@ class TimeoutTask extends Task {
         this.updateNeighborsState("killed",this.children);
         const errorQueue = this.ss.getSheetByName("Errors");
         // apppend itself and all downstream processes
-        errorQueue.appendRow(this.taskKey);
+        const task = JSON.parse(this.taskKey);
+        errorQueue.appendRow(task);
         for(let child of this.children){
-            errorQueue.appendRow(child.taskKey);
+            errorQueue.appendRow(JSON.parse(child.taskKey));
         }
         Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
-        const task = JSON.parse(this.taskKey);
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);
         this.ss.getSheetByName("Error_Log").appendRow(task);

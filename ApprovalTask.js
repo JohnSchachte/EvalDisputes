@@ -18,9 +18,7 @@ class ApprovalTask extends Task{
     }
 
     deconstruct(){
-        this.storage.remove(this.taskKey);
         this.storage.remove(this.taskKey+"state");
-        
     }
 
       
