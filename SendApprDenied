@@ -1,6 +1,6 @@
 class SendApproval extends TimeoutTask {
     constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
 
     
@@ -35,7 +35,7 @@ class SendApproval extends TimeoutTask {
 
 class SendDenied extends Task{
     constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
 
     run(email,reason){

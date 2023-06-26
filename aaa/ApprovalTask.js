@@ -1,6 +1,6 @@
 class ApprovalTask extends Task{
-    constructor(name,process, taskKey,storage) {
-        super(name,process, taskKey,storage);
+    constructor(name,process, taskKey) {
+        super(name,process, taskKey);
     }
 
     rebootChildren(){
@@ -18,7 +18,7 @@ class ApprovalTask extends Task{
     }
 
     deconstruct(){
-        this.storage.remove(this.taskKey+"state");
+        this.process.storage.remove(this.taskKey+"state");
     }
 
       

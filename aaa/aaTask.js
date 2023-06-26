@@ -1,10 +1,9 @@
 class Task {
-    constructor(name,process,taskKey,storage) {
+    constructor(name,process,taskKey) {
       this.parents = new Map();
       this.children = new Map();
       this.siblings = new Map();
       this.name = name;
-      this.storage = storage;
       this.taskKey = taskKey;
       this.process = process;
       this.ss =  SpreadsheetApp.openById(BACKEND_ID); // make this the id of the spreadsheet of information
@@ -58,11 +57,11 @@ class Task {
     }
   
     updateSelfState(newState) {
-      this.storage.set(this.taskKey+"state",newState);
+      this.process.storage.set(this.taskKey+"state",newState);
     }
   
     getStateSelf() {
-      return this.storage.get(this.taskKey+"state");
+      return this.process.storage.get(this.taskKey+"state");
     }
   
     onSuccess() {

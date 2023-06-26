@@ -1,6 +1,6 @@
 class TimeoutTask extends Task {
-    constructor(name,process, taskKey,storage) {
-      super(name,process, taskKey,storage);
+    constructor(name,process, taskKey) {
+      super(name,process, taskKey);
     }
 
     setTriggerSelf(key = this.taskKey) {
@@ -13,14 +13,14 @@ class TimeoutTask extends Task {
     }
 
     getTimeout(){
-        const timeout = this.storage.get(this.key+"timeout");
+        const timeout = this.process.storage.get(this.key+"timeout");
         if(timeout)return parseInt(timeout);
         return null;
     }
     setTimeout(newTimeout){
         const currentTimeout = this.getTimeout();
         if(!currentTimeout || this.checkTimeout(currentTimeout,newTimeout)){
-            this.storage.set(this.key+"timeout",newTimeout);
+            this.process.storage.set(this.key+"timeout",newTimeout);
             return true;
         }
         return false;
@@ -33,8 +33,8 @@ class TimeoutTask extends Task {
 
     
     deconstruct(){
-        this.storage.remove(this.taskKey+"state");
-        this.storage.remove(this.taskKey+"timeout");
+        this.process.storage.remove(this.taskKey+"state");
+        this.process.storage.remove(this.taskKey+"timeout");
     }
 
     wait(targetState,delay = 500){

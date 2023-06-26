@@ -44,8 +44,9 @@ class Process {
   }
   
   getNode(name){
-    return (this.children.get(name) || this.siblings.get(name) || this.parents.get(name));
+    return this.children ? this.children.get(name) : null;
   }
+  
   setTree(tree){
     this.children = tree; 
   }

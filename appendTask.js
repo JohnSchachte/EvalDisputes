@@ -2,7 +2,7 @@
 
 class AppendBackend extends TimeoutTask {
     constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
 
     checkTimeout(currentTimeout,newTimeout){
@@ -89,7 +89,7 @@ class AppendBackend extends TimeoutTask {
 
 class SendManagementEmail extends TimeoutTask {
     constructor(name,process){
-        super(name,process,JSON.stringify([name,process.rootKey]),process.storage);
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
     
     checkTimeout(currentTimeout,newTimeout){

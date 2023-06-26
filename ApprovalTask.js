@@ -1,6 +1,6 @@
 class HasCoachingBackend extends ApprovalTask {
-    constructor(name,process,storage) {
-        super(name,process,JSON.stringify([name,process.rootKey]),storage);
+    constructor(name,process) {
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
 
     run(){
@@ -14,8 +14,8 @@ class HasCoachingBackend extends ApprovalTask {
 }
 
 class CheckEvalId extends ApprovalTask {
-    constructor(name,process,storage) {
-        super(name,process,JSON.stringify([name,process.rootKey]),storage);
+    constructor(name,process) {
+        super(name,process,JSON.stringify([name,process.rootKey]));
     }
 
     run(){
