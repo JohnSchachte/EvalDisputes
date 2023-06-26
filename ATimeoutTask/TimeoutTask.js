@@ -39,20 +39,15 @@ class TimeoutTask extends Task {
     }
 
     wait(targetState,delay = 500){
-        const startTime = new Date().getTime();
-        const maxTime = startTime + 3*300000;
         let processState = this.process.getState();
-        let stateSelf = this.getStateSelf();
-        let rn = new Date().getTime();
         // processState is the targetState && within Timeout && the process has not deconstructed itself && this process has not been killed by parent.
-        while(processState !== targetState && rn < maxTime && rn < this.getTimeout() && processState &&
-            processState !== "denied" && stateSelf !== "killed"){
+        while(processState !== targetState && new Date().getTime() < this.getTimeout() && processState &&
+            processState !== "denied" && this.getStateSelf() !== "killed"){
             Utilities.sleep(delay);
             processState = this.process.getState();
-            rn = new Date().getTime();
         }
         // if(!processState || processState === "denied") this.deconstruct(); // free all memory. Parent deconstructs tree but I'm worried this process may have saved state.
-        return stateSelf === "killed" || rn < maxTime || rn < this.getTimeout() ? stateSelf : processState;
+        return stateSelf === "killed" || new Date() > this.getTimeout() ? stateSelf : processState;
     }
 
     rebootChildren(){
