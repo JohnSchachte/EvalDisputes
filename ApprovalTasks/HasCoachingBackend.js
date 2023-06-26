@@ -9,6 +9,6 @@ class HasCoachingBackend extends ApprovalTask {
         const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
         const email = formResponse[colMap.get("Email Address")];
         const hasBackend = OperationCoachingMembers.isInEmailSet(formResponse[colMap.get("Email Address")].toLowerCase());
-        return hasBackend ? false : [email,`Your WFM team ${EmailToWFM.getAgentObj["Team"]} does not map to a backend to store the data. Please, reach out to your supervisor`];
+        return hasBackend ? false : [email,`Your WFM team ${(EmailToWFM.getAgentObj["Team"] || "No Teamd")} does not map to a backend to store the data. Please, reach out to your supervisor`];
     }
 }
