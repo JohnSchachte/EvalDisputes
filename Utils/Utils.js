@@ -132,3 +132,14 @@ function deconstructBackend(task){
   );
   scriptProp.deleteProperty(JSON.stringify(task));
 }
+
+function getHttp(team,cache){
+  const getTeams = Custom_Utilities.memoize( () => CoachingRequestScripts.getTeams(REPORTING_ID),cache);
+  const teams = getTeams();
+  for(let i=0;i<teams.length;i++){
+    if(teams[i].values[0].includes(team)){
+      return teams[i].values[0][2]; // replace this with web app url
+    }
+  }
+  throw new Error("Team is not on Operation Coaching Master Sheet");
+}
