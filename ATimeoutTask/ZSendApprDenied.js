@@ -18,7 +18,8 @@ class SendApproval extends TimeoutTask {
         if(resultState != "approved"){
             return resultState;
         }
-        sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sent to Supervisor",template);
+        sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
+        // sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
         return true;
     }
 
@@ -44,7 +45,8 @@ class SendDenied extends Task{
     run(email,reason){
         const template = HtmlService.createTemplateFromFile("DeniedEmail");
         template.denialReason = reason;
-        sendEmail(email,"Evaluation Dispute Denied",template);
+        sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
+        // sendEmail(email,"Evaluation Dispute Denied",template);
         return true;
     }
 

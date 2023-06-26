@@ -53,8 +53,8 @@ class SendManagementEmail extends TimeoutTask {
         if(resultState != "appended"){
             return resultState;
         }
-
-        sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+        sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+        // sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         return true;
     }
 
