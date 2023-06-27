@@ -63,7 +63,7 @@ class ApprovalTask extends Task{
             this.deconstructNeighbors(this.siblings);
         }else{
             // deny all downstream processes.
-            const denyProcess = process.children.get("sendDenied");
+            const denyProcess = this.process.children.get("sendDenied");
             denyProcess.setTriggerSelf(JSON.stringify([denyProcess.name,...message]));
             denyProcess.fireTriggerSelf();
             this.updateProcess("denied");

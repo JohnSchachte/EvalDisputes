@@ -14,10 +14,10 @@ function mkProcess(rootKey,) {
   // second depth
   const appendBackend = new AppendBackend("appendBackend", process);
   const sendApproval = new SendApproval("sendApproval", process);
-  // const sendDenied = new SendDenied("sendDenied", process);
+  const sendDenied = new SendDenied("sendDenied", process);
   children.set(appendBackend.name, appendBackend);
   children.set(sendApproval.name, sendApproval);
-  // children.set(sendDenied.name, sendDenied);
+  children.set(sendDenied.name, sendDenied);
   const secondDepth = [appendBackend, sendApproval];
   checkEvalId.setChildren(secondDepth);
   hasCoachingBackend.setChildren(secondDepth);

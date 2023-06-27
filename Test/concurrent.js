@@ -4,7 +4,7 @@ function testConcurrentSendApprovalSuccess(){
     process.setState("running");
     sendApproval.setTimeout(30000);
     const sendApproval = process.getNode("sendApproval");
-    result = sendApproval.run();
+    const result = sendApproval.run();
     sendApproval.onSuccess(result);
     Logger.log(result);
   }
@@ -14,7 +14,7 @@ function testConcurrentSendApprovalSuccess(){
     process.setState("running");
     const append = process.getNode("appendBackend");
     append.setTimeout(30000);
-    result = append.run();
+    const result = append.run();
     append.onSuccess(result);
     Logger.log(result);
   }
