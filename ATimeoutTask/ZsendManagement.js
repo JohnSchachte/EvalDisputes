@@ -10,6 +10,7 @@ class SendManagementEmail extends TimeoutTask {
         return false;
     }
 
+
     run(){
         this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
@@ -49,7 +50,7 @@ class SendManagementEmail extends TimeoutTask {
             agentEmail : formResponse[colMap.get("Email Address")]
         };
         
-        const template = HtmlService.createTemplateFromFile("Management_Notification");
+        const template = HtmlService.createTemplateFromFile("html/Management_Notification");
         template.vars = vars;
         
         const resultState = this.wait("appended");
@@ -73,7 +74,7 @@ class SendManagementEmail extends TimeoutTask {
             this.logSelf(message);
             this.deconstruct();
             this.process.deconstructTree(); // process is done!
-        }else if(message == "killed"){
+        }else if(message == "stopped"){
             this.updateStateSelf("stopped");
         }
         // tree was deconstructed

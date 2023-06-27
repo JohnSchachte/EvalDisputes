@@ -51,20 +51,20 @@ class TimeoutTask extends Task {
         let timeout = this.getTimeout();
         let stateSelf = this.getStateSelf();
         // if(!processState || processState === "denied") this.deconstruct(); // free all memory. Parent deconstructs tree but I'm worried this process may have saved state.
-        return stateSelf === "killed" || new Date() > this.getTimeout() ? stateSelf : processState;
+        return stateSelf === "killed" || new Date() > this.getTimeout() ? "stopped" : processState;
     }
 
     rebootChildren(){
         const fiveMins = new Date().getTime() + 300000;
-        for(let child of this.children){
+        this.children.forEach(child => {
             if(child instanceof TimeoutTask){
                 child.setTimeout(fiveMins);
             }
-            if(child.getState() === "stopped"){
+            if(child.getStateSelf() === "stopped"){
                 child.setTriggerSelf();
-                child.updateState("pending");
+                child.updateStateSelf("pending");
             }
-        }
+        });
         Custom_Utilities.fireTrigger(); // fires all the triggers that were just set.
     }
 

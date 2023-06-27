@@ -5,15 +5,18 @@ class SendApproval extends TimeoutTask {
 
     
     checkTimeout(currentTimeout,newTimeout){
-        return newTimeout > currentTimeout;
+        const rn = new Date().getTime();
+        const proposed = rn + newTimeout;
+        if(!currentTimeout || proposed > currentTimeout) return proposed.toString(); // there isn't one then return proposed
+        return false;
     }
 
     run(){
-        this.updateStateSelf("running");
+        // this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
         const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
-        const template = HtmlService.createTemplateFromFile("Approved");
+        const template = HtmlService.createTemplateFromFile("html/Approved");
         const resultState = this.wait("approved");
         if(resultState != "approved"){
             return resultState;
@@ -32,8 +35,8 @@ class SendApproval extends TimeoutTask {
     }
 
     onSuccess(message){
-        if(message)
         this.logSelf(message);
+        // this.updateStateSelf("success");
     }
 }
 
@@ -52,7 +55,7 @@ class SendDenied extends Task{
     }
 
     run(email,reason){
-        const template = HtmlService.createTemplateFromFile("DeniedEmail");
+        const template = HtmlService.createTemplateFromFile("html/DeniedEmail");
         template.denialReason = reason;
         sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
         // sendEmail(email,"Evaluation Dispute Denied",template);
@@ -69,7 +72,7 @@ class SendDenied extends Task{
     
     onSuccess(message){
         this.logSelf(message);
-        this.deconstruct();
+        this.process.deconstructTree();
     }
     deconstruct(){
       this.process.storage.remove(this.taskKey+"state");

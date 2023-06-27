@@ -18,13 +18,13 @@ function mkProcess(rootKey,) {
   children.set(appendBackend.name, appendBackend);
   children.set(sendApproval.name, sendApproval);
   // children.set(sendDenied.name, sendDenied);
-  // const secondDepth = [appendBackend, sendApproval, sendDenied];
+  const secondDepth = [appendBackend, sendApproval];
   checkEvalId.setChildren(secondDepth);
   hasCoachingBackend.setChildren(secondDepth);
 
   // appendBackend.setSiblings([sendApproval, sendDenied]);
   // sendApproval.setSiblings([appendBackend, sendDenied]);
-  sendDenied.setSiblings([appendBackend, sendApproval]);
+  // sendDenied.setSiblings([appendBackend, sendApproval]);
 
   // third depth
   const sendManagementEmail = new SendManagementEmail("sendManagementEmail", process);

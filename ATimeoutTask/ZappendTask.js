@@ -22,16 +22,16 @@ class AppendBackend extends TimeoutTask {
         // case one run returns void -> do nothing and deconstruct
         // case two run returns a message of denied -> deconstruct
         // case three
-        if(message == "approved"){
+        if(message !== "denied" || message !== "stopped"){
             // success
             this.updateProcess("appended");
             this.rebootChildren();
             this.logSelf(message);
             this.updateStateSelf("success");
-        }else if(message = "killed"){
+        }else if(message === "stopped"){
             // parent errored and killed all children.
             this.updateStateSelf("stopped");
-        }
+        }//denied is handled by the parent
         // tree was deconstructed
     }
 
