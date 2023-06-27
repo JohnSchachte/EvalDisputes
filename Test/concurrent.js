@@ -1,4 +1,4 @@
-const concurrentId = "36"
+const concurrentId = "41"
 function testConcurrentSendApprovalSuccess(){
     const process = mkProcess(concurrentId);
     process.setState("running");
@@ -28,4 +28,14 @@ function testConcurrentSendApprovalSuccess(){
     const checkEvalId = process.getNode("checkEvalId");
     result = checkEvalId.run();
     checkEvalId.onSuccess(result);
+  }
+
+  function testConcurrentSendManagementSuccess(){
+    const process = mkProcess(concurrentId);
+    process.setState("running");
+    const sendManagementEmail = process.getNode("sendManagementEmail");
+    sendManagementEmail.setTimeout(30000);
+    let result = sendManagementEmail.run();
+    sendManagementEmail.onSuccess(result);
+    Logger.log(result);
   }

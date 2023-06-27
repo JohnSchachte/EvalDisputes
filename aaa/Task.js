@@ -137,14 +137,26 @@ class Task {
     checkNeighborsState(neighbors,state){
       let result = true;
       neighbors.forEach(neighbor => {
-        Logger.log(neighbor.getStateSelf());
-        Logger.log(neighbor.getName());
         if (neighbor.getStateSelf() !== state) {
           result = false;
         }
       });
       return result;
     }
+
+  /**
+  * Checks the state of the neighbors.
+  * @param {Array<Task>} neighbors - The neighbor tasks.
+  * @param {string} state - The state to check.
+  * @returns {boolean} True if all neighbors are in the given state, false otherwise.
+  */
+  updateNeighborsState(neighbors,state,condition = (neighbor) => true){
+    neighbors.forEach(neighbor => {
+      if(condition(neighbor)) {
+        neighbor.updateStateSelf(state);
+      }
+    });
+  }
   /**
   * Deconstructs the neighbor tasks.
   * @param {Array<Task>} neighbors - The neighbor tasks.
