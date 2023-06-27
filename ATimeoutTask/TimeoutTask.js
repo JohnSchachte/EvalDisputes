@@ -60,7 +60,8 @@ class TimeoutTask extends Task {
             if(child instanceof TimeoutTask){
                 child.setTimeout(fiveMins);
             }
-            if(child.getStateSelf() === "stopped"){
+            const stoppedStates = new Set(["stopped","killed",null]);
+            if(stoppedStates.has(child.getStateSelf())){
                 child.setTriggerSelf();
                 child.updateStateSelf("pending");
             }

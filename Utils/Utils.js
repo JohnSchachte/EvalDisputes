@@ -50,12 +50,6 @@ function getIdObject(formResponse,colMap,type,name){
   return idObject ? idObject : memoizedDeepFind(type, id);
 }
 
-function initializeStarts(formId,jobName){
-  const jobs = getJobs();
-  const task = [jobName,formId];
-  Custom_Utilities.getTaskManager(jobs,[task]).executeTask(task);
-}
-
 function addTimes(names,key){
   names.forEach(name=>addTime(key,name));
 }

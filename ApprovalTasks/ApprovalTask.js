@@ -9,8 +9,8 @@ class ApprovalTask extends Task{
             if(child instanceof TimeoutTask){
                 child.setTimeout(fiveMins);
             }
-            let childState = child.getStateSelf()
-            if(!childState || childState === "stopped"){
+            const stoppedStates = new Set(["stopped","killed",null]);
+            if(stoppedStates.has(child.getStateSelf())){
                 child.setTriggerSelf();
                 child.updateStateSelf("pending");
                 Logger.log("set = %s trigger",child.getName());
@@ -43,7 +43,7 @@ class ApprovalTask extends Task{
 
     // ... implement other methods ...
     onSuccess(message) {
-        Logger.log(message);
+        Logger.log("onSuccess message %s",message);
         if(!message){
             // was approved
             
@@ -52,6 +52,7 @@ class ApprovalTask extends Task{
 
             // check approval and if children statuses need reboot.
             const isApproved = this.checkNeighborsState(this.siblings,"approved");
+            Logger.log("isApproved = %s",isApproved);
             //both are approved so reboot children to make sure everything goes as planned.
             if(isApproved){
                 this.updateProcess("approved") //whole task is approved. this will signal running processes to go forward.
@@ -72,7 +73,7 @@ class ApprovalTask extends Task{
     }
 
     onFailure(message){
-        Logger.log(message);
+        Logger.log("OnFailure message = %s",message);
         // kill all downstream processes
         this.updateNeighborsState(this.children,"killed");
         const errorQueue = this.ss.getSheetByName("Errors");

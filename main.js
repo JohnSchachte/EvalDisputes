@@ -1,39 +1,44 @@
 function startCheckEval(e){
   const jobName = "checkEvalId";
-  const formId = e ? e.range.rowStart : 122;
-  initializeStarts(formId,jobName);
+  const formId = e ? e.range.rowStart : "122";
+  initializeStarts(formId+'',jobName);
 }
 
 function startHasBackend(e){
   const jobName = "hasCoachingBackend";
   const formId = e ? e.range.rowStart : 122;
-  initializeStarts(formId,jobName);
+  initializeStarts(formId+'',jobName);
 }
 
 function startSendApproval(e){
   const jobName = "sendApproval";
   const formId = e ? e.range.rowStart : 5;
-  initializeStarts(formId,jobName)
+  initializeStarts(formId+'',jobName)
 }
 
 function startAppendBackend(e){
   const jobName = "appendBackend";
   const formId = e ? e.range.rowStart : 5;
-  initializeStarts(formId,jobName)
+  initializeStarts(formId+'',jobName)
 }
 
 function startSendManagement(e){
   const jobName = "sendManagementEmail";
   const formId = e ? e.range.rowStart : 5;
-  initializeStarts(formId,jobName)
+  initializeStarts(formId+'',jobName)
 }
 
 function initiateTask(e){
   if(e) Custom_Utilities.deleteSelfTrigger(e,ScriptApp);
-  // const jobs = getJobs();
+  Logger.log(typeof cache.get(e.triggerUid))
+  
+  Logger.log(cache.get(e.triggerUid))
   const task = JSON.parse(cache.get(e.triggerUid));
-  Logger.log(task);
-  // Custom_Utilities.getTaskManager(jobs,[task]).executeTask(task);
+  Logger.log("task = %s",task);
+  Logger.log("type of task = " + typeof task);
+  const [jobName, formId] = task;
+  initializeStarts(formId+'', jobName);
+
 }
 
 function doErrors(e){
@@ -48,26 +53,20 @@ function doErrors(e){
     Custom_Utilities.exponentialBackoff(() => UrlFetchApp.fetch(url, options));
   }
   fireTrigger();
-  const ss = SpreadsheetApp.openById(BACKEND_ID);
-  const readFromCache = Custom_Utilities.getMemoizedReads(cache);
-  const colMap = mkColMap(readFromCache(BACKEND_ID,"Submissions!1:1").values[0]);
-
+  const ss = SpreadsheetApp.openById(BACKEND_ID_TEST);
   // all items needed to make tasks and jobs
   const errorQueue = ss.getSheetByName("Errors");
-
-  const jobs = mkJobs({ss,colMap},cache);
   
   const tasks = errorQueue.getDataRange().getValues(); // gets the tasks to do
-
-  const taskManager = Custom_Utilities.getTaskManager(jobs,tasks.slice(1)); // declare task manager and slice the header row of tasks;
-
-  let hasNext = true;
-  let count = 0
-  while(hasNext){
-    hasNext = taskManager.doTask();
-    errorQueue.deleteRow(2);
-    count++;
-    if(count % 5 == 0) Custom_Utilities.fireTrigger();
-  }
-  Custom_Utilities.fireTrigger();
+  tasks.slice(1).forEach(task => {
+    Logger.log(task);
+    const jobName = task[0];
+    const formId = task[1] +'';
+    const process = mkProcess(formId);
+    process.setState("running");
+    const node = process.getNode(jobName);
+    node.setTriggerSelf(JSON.stringify(task));
+    node.fireTriggerSelf();
+    errorQueue.deleteRow(2); // delete the task at head of queue
+  });
 }

@@ -22,7 +22,7 @@ class AppendBackend extends TimeoutTask {
         // case one run returns void -> do nothing and deconstruct
         // case two run returns a message of denied -> deconstruct
         // case three
-        if(message !== "denied" || message !== "stopped"){
+        if(message && (message !== "denied" || message !== "stopped")){
             // success
             this.updateProcess("appended");
             this.rebootChildren();

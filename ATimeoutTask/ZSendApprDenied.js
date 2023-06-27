@@ -35,7 +35,13 @@ class SendApproval extends TimeoutTask {
     }
 
     onSuccess(message){
-        this.logSelf(message);
+        if(message === true){
+            Logger.log("onSuccess message s%",message);
+            this.logSelf(message);
+        }else{
+            Logger.log("SendApproval did not send");
+            this.updateStateSelf("stopped");
+        }
         // this.updateStateSelf("success");
     }
 }
