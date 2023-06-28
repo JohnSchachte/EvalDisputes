@@ -71,8 +71,8 @@ function testSendManagementSuccess(){
   result = checkEvalId.run();
   checkEvalId.onSuccess(result);
 
-  sendApproval.setTimeout(10000);
   const sendApproval = process.getNode("sendApproval");
+  sendApproval.setTimeout(10000);
   result = sendApproval.run();
   sendApproval.onSuccess(result);
   Logger.log(result);

@@ -23,13 +23,13 @@
 // }
 
 
-function setUpFormTriggersLive(){
-  const funcs = ["startCheckEval","startHasBackend","startSendApproval","startAppendBackend","startSendManagement"];
-  const liveBackend = SpreadsheetApp.openById(BACKEND_ID);
-  funcs.forEach(func =>{
-    ScriptApp.newTrigger(func)
-    .forSpreadsheet(liveBackend)
-    .onFormSubmit()
-    .create();
-  });
-}
+// function setUpFormTriggersLive(){
+//   const funcs = ["startCheckEval","startHasBackend","startSendApproval","startAppendBackend","startSendManagement"];
+//   const liveBackend = SpreadsheetApp.openById(BACKEND_ID);
+//   funcs.forEach(func =>{
+//     ScriptApp.newTrigger(func)
+//     .forSpreadsheet(liveBackend)
+//     .onFormSubmit()
+//     .create();
+//   });
+// }
