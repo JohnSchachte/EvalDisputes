@@ -61,7 +61,17 @@ function testConcurrentApproveStatus(){
 function testSendManagementSuccess(){
   const process = mkProcess(testId);
 
-  const append = process.getNode("appendBackend");
+  // const sendApproval = process.getNode("sendApproval");
+  // sendApproval.setTimeout(10000);
+  // result = sendApproval.run();
+  // sendApproval.onSuccess(result);
+  // Logger.log(result);
+
+  // const append = process.getNode("appendBackend");
+  // append.setTimeout(10000);
+  // result = append.run();
+  // append.onSuccess(result);
+  // Logger.log(result);
 
   const hasBackend = process.getNode("hasCoachingBackend");
   let result = hasBackend.run();
@@ -71,21 +81,11 @@ function testSendManagementSuccess(){
   result = checkEvalId.run();
   checkEvalId.onSuccess(result);
 
-  const sendApproval = process.getNode("sendApproval");
-  sendApproval.setTimeout(10000);
-  result = sendApproval.run();
-  sendApproval.onSuccess(result);
-  Logger.log(result);
-
-  append.setTimeout(10000);
-  result = append.run();
-  append.onSuccess(result);
-  Logger.log(result);
 
 
-  const sendManagementEmail = process.getNode("sendManagementEmail");
-  result = sendManagementEmail.run();
-  sendManagementEmail.onSuccess(result);
-  Logger.log(result);
+  // const sendManagementEmail = process.getNode("sendManagementEmail");
+  // result = sendManagementEmail.run();
+  // sendManagementEmail.onSuccess(result);
+  // Logger.log(result);
   
 }

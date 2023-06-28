@@ -19,10 +19,9 @@ class AppendBackend extends TimeoutTask {
     }
 
     onSuccess(message){
-        // case one run returns void -> do nothing and deconstruct
-        // case two run returns a message of denied -> deconstruct
-        // case three
+        Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message && (message !== "denied" || message !== "stopped")){
+            Logger.log("appendBackend is successful. should change process state to appended and self to success");
             // success
             this.updateProcess("appended");
             this.rebootChildren();
@@ -80,6 +79,7 @@ class AppendBackend extends TimeoutTask {
         caseArray[9] = formatAdditionalComments(formResponse,colMap,idObject[0],idObject[1]); //caseArray is fully complete
         requestOptions["payload"] = JSON.stringify(caseArray); // prepare for request
         const resultState = this.wait("approved");
+        Logger.log("resultState = %s in %s",resultState,this.getName());
         if(resultState != "approved"){
             return resultState;
         }

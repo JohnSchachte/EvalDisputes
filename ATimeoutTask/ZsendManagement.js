@@ -10,20 +10,6 @@ class SendManagementEmail extends TimeoutTask {
         return false;
     }
 
-    wait(targetState,condition = ()=>true,delay = 500){
-        let processState = this.process.getState();
-        // processState is the targetState && within Timeout && the process has not deconstructed itself && this process has not been killed by parent.
-        while(processState !== targetState && new Date().getTime() < this.getTimeout() && processState &&
-            processState !== "denied" && this.getStateSelf() !== "killed"){
-            Utilities.sleep(delay);
-            processState = this.process.getState();
-            Logger.log("waiting");
-        }
-        let stateSelf = this.getStateSelf();
-        // if(!processState || processState === "denied") this.deconstruct(); // free all memory. Parent deconstructs tree but I'm worried this process may have saved state.
-        return stateSelf === "killed" || new Date() > this.getTimeout() ? "stopped" : processState;
-    }
-
 
     run(){
         this.updateStateSelf("running");
@@ -69,7 +55,10 @@ class SendManagementEmail extends TimeoutTask {
         
         const resultState = this.wait("appended",()=>{
             const parentStatus = this.process.getNode("appendBackend").getStateSelf();
-            parentStatus !== "success"});
+            parentStatus !== "success"
+        });
+        Logger.log("resultState = %s in %s",resultState,this.getName());
+
         if(resultState != "appended"){
             return resultState;
         }

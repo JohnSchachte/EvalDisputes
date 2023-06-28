@@ -1,7 +1,7 @@
 function tryTask(node){
   try{
-    node.run();
-    node.onSuccess();
+    const message = node.run();
+    node.onSuccess(message);
     return true;
   }catch(f){
     Logger.log(f);
