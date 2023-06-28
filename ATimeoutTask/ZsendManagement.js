@@ -12,6 +12,8 @@ class SendManagementEmail extends TimeoutTask {
 
 
     run(){
+        const startState = this.getStateSelf();
+        if( startState === "successful" || startState === "running") return null;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];

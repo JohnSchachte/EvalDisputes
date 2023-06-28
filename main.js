@@ -30,12 +30,8 @@ function startSendManagement(e){
 
 function initiateTask(e){
   if(e) Custom_Utilities.deleteSelfTrigger(e,ScriptApp);
-  Logger.log(typeof cache.get(e.triggerUid))
-  
-  Logger.log(cache.get(e.triggerUid))
   const task = JSON.parse(cache.get(e.triggerUid));
   Logger.log("task = %s",task);
-  Logger.log("type of task = " + typeof task);
   const [jobName, formId] = task;
   initializeStarts(formId+'', jobName);
 

@@ -36,6 +36,8 @@ class AppendBackend extends TimeoutTask {
 
     run(){
         Logger.log(this.process.rootKey);
+        const startState = this.getStateSelf();
+        if( startState === "successful" || startState === "running") return;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
         //do this before the check. Usually waiting 3-5 seconds anyways.
         const reader = Custom_Utilities.getMemoizedReads(cache);
