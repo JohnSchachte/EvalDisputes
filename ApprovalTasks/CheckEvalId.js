@@ -8,7 +8,7 @@ class CheckEvalId extends ApprovalTask {
     if(!this.shouldRun())return; //denied,successful, or running
     // if true then the state has been set to running
     
-    const [formResponse,colMap] = getFormResponseAndMap(); // gets the form response row and the column map of headers
+    const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
     const email = formResponse[colMap.get("Email Address")];
     const agentObj = EmailToWFM.getAgentObj(email);
     if(!agentObj){

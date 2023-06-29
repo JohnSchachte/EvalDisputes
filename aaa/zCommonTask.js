@@ -41,6 +41,3 @@ class CommonTask extends Task {
         return [formResponse,colMap];
     }
 }
-CommonTask.prototype.stoppedStates = new Set(["stopped","killed",null]);
-CommonTask.prototype.progressStates = new Set(["success","running","denied"]);
-CommonTask.prototype.ss = SpreadsheetApp.openById(BACKEND_ID_TEST);

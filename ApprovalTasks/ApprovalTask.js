@@ -12,7 +12,7 @@ class ApprovalTask extends CommonTask{
         const task = JSON.parse(this.taskKey);
         task.push(!message);
         task.push(new Date().toLocaleString());
-        ss.getSheetByName("Approval_Log").appendRow(task);
+        this.ss.getSheetByName("Approval_Log").appendRow(task);
     }
 
     // ... implement other methods ...

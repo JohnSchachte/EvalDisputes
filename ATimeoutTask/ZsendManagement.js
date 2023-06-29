@@ -12,12 +12,10 @@ class SendManagementEmail extends TimeoutTask {
 
 
     run(){
-        const startState = this.getStateSelf();
-        if(startState === "running") return null;//do nothing because it's already run or is running.
-        this.updateStateSelf("running");
-        const reader = Custom_Utilities.getMemoizedReads(cache);
-        const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];
-        const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
+        if(!this.shouldRun())return; //denied,successful, or running
+        // if true then the state has been set to running
+        const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
+        
         const evalType = getType(formResponse,colMap);
         const caseArray = this.mkCaseArray(formResponse,colMap,evalType);
 

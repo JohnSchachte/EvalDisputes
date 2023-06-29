@@ -14,7 +14,7 @@ class SendApproval extends TimeoutTask {
     run(){
         if(!this.shouldRun())return; //denied,successful, or running
         // if true then the state has been set to running
-        const [formResponse,colMap] = getFormResponseAndMap(); // gets the form response row and the column map of headers
+        const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
         const template = HtmlService.createTemplateFromFile("html/Approved");
         //wait for parents or other events described in timeout task
         const result = this.wait(this.checkCondition.bind(this));
