@@ -4,7 +4,7 @@ class CheckEvalId extends ApprovalTask {
   }
 
   run(){
-    Logger.log(this.process.rootKey)
+    Logger.log(this.process.rootKey);
     const readFromCache = Custom_Utilities.getMemoizedReads(cache);
     const formResponse = readFromCache(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
     const colMap = mkColMap(readFromCache(BACKEND_ID_TEST,"Submissions!1:1").values[0]);

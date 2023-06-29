@@ -12,8 +12,9 @@ class SendManagementEmail extends TimeoutTask {
 
 
     run(){
+        throw new Error("testing onError repeatedly");
         const startState = this.getStateSelf();
-        if( startState === "successful" || startState === "running") return null;//do nothing because it's already run or is running.
+        if(startState === "running") return null;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];
@@ -77,6 +78,7 @@ class SendManagementEmail extends TimeoutTask {
     }
     
     onSuccess(message){
+        Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === true){
             this.logSelf(message);
             this.deconstruct();

@@ -19,3 +19,12 @@ function testConcurrentHasBackendError(){
     result = checkEvalId.run();
     checkEvalId.onFailure(result);
   }
+
+  function bothError(){
+    const process = mkProcess(concurrentId);
+    const hasBackend = process.getNode("hasCoachingBackend");
+    hasBackend.onFailure();
+  
+    const checkEvalId = process.getNode("checkEvalId");
+    checkEvalId.onFailure();
+  }

@@ -37,7 +37,7 @@ class AppendBackend extends TimeoutTask {
     run(){
         Logger.log(this.process.rootKey);
         const startState = this.getStateSelf();
-        if( startState === "successful" || startState === "running") return;//do nothing because it's already run or is running.
+        if( startState === "success" || startState === "running") return;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
         //do this before the check. Usually waiting 3-5 seconds anyways.
         const reader = Custom_Utilities.getMemoizedReads(cache);
@@ -80,7 +80,10 @@ class AppendBackend extends TimeoutTask {
 
         caseArray[9] = formatAdditionalComments(formResponse,colMap,idObject[0],idObject[1]); //caseArray is fully complete
         requestOptions["payload"] = JSON.stringify(caseArray); // prepare for request
-        const resultState = this.wait("approved");
+        const resultState = this.wait("approved",()=>{
+            const state = this.getStateSelf();
+            return state !== "success";
+        });
         Logger.log("resultState = %s in %s",resultState,this.getName());
         if(resultState != "approved"){
             return resultState;

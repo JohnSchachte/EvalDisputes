@@ -69,15 +69,13 @@ class TimeoutTask extends Task {
 
     onFailure(message){
         Logger.log(message);
+        this.updateStateSelf("err");
         // kill all downstream processes
-        this.updateNeighborsState("killed",this.children);
+        this.updateNeighborsState(this.children,"killed");
         const errorQueue = this.ss.getSheetByName("Errors");
         // apppend itself and all downstream processes
         const task = JSON.parse(this.taskKey);
         errorQueue.appendRow(task);
-        for(let child of this.children){
-            errorQueue.appendRow(JSON.parse(child.taskKey));
-        }
         Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);

@@ -80,9 +80,6 @@ class ApprovalTask extends Task{
         // apppend itself and all downstream processes
         const task = JSON.parse(this.taskKey);
         errorQueue.appendRow(task);
-        this.children.forEach(child => {
-            errorQueue.appendRow(JSON.parse(child.taskKey));
-        });
         Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);

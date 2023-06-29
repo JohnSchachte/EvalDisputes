@@ -1,12 +1,12 @@
 function startCheckEval(e){
   const jobName = "checkEvalId";
-  const formId = e ? e.range.rowStart : "122";
+  const formId = e ? e.range.rowStart : "41";
   initializeStarts(formId+'',jobName);
 }
 
 function startHasBackend(e){
   const jobName = "hasCoachingBackend";
-  const formId = e ? e.range.rowStart : 122;
+  const formId = e ? e.range.rowStart : "41";
   initializeStarts(formId+'',jobName);
 }
 
@@ -59,7 +59,7 @@ function doErrors(e){
     const jobName = task[0];
     const formId = task[1] +'';
     const process = mkProcess(formId);
-    process.setState("running");
+    !process.getState() ? process.setState("running") : false;
     const node = process.getNode(jobName);
     node.setTriggerSelf(JSON.stringify(task));
     node.fireTriggerSelf();

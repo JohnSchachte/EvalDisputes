@@ -13,13 +13,15 @@ class SendApproval extends TimeoutTask {
 
     run(){
         const startState = this.getStateSelf();
-        if( startState === "successful" || startState === "running") return null;//do nothing because it's already run or is running.
+        if( startState === "success" || startState === "running") return null;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
         const reader = Custom_Utilities.getMemoizedReads(cache);
         // const formResponse = reader(BACKEND_ID,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
         // const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
         const template = HtmlService.createTemplateFromFile("html/Approved");
-        const resultState = this.wait("approved");
+        const resultState = this.wait("approved",()=>{
+            return state !== "success";
+        });
         Logger.log("resultState = %s in %s",resultState,this.getName());
         if(resultState != "approved"){
             return resultState;
@@ -41,6 +43,7 @@ class SendApproval extends TimeoutTask {
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === true){
             this.logSelf(message);
+            this.updateStateSelf("success")
         }else if(message === null){
             return;
         }else{
