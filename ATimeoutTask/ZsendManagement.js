@@ -12,7 +12,6 @@ class SendManagementEmail extends TimeoutTask {
 
 
     run(){
-        throw new Error("testing onError repeatedly");
         const startState = this.getStateSelf();
         if(startState === "running") return null;//do nothing because it's already run or is running.
         this.updateStateSelf("running");
@@ -20,7 +19,7 @@ class SendManagementEmail extends TimeoutTask {
         const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0];
         const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
         const evalType = getType(formResponse,colMap);
-        const caseArray = mkCaseArray(formResponse,colMap,evalType);
+        const caseArray = this.mkCaseArray(formResponse,colMap,evalType);
 
         const agentObject = EmailToWFM.getAgentObj(formResponse[colMap.get("Email Address")]);
         if(!agentObject){
@@ -34,7 +33,7 @@ class SendManagementEmail extends TimeoutTask {
             return;
         }
 
-        caseArray[9] = formatAdditionalComments(formResponse,colMap,idObject[0],idObject[1]); //caseArray is fully complete
+        caseArray[9] = this.formatAdditionalComments(formResponse,colMap,idObject[0],idObject[1]); //caseArray is fully complete
         caseArray[2] = agentObject["Employee Name"];
         caseArray[3] = agentObject["SUPERVISOR"];
         caseArray[4] = agentObject["Email Address"]; //submitter
@@ -56,16 +55,12 @@ class SendManagementEmail extends TimeoutTask {
         const template = HtmlService.createTemplateFromFile("html/Management_Notification");
         template.vars = vars;
         
-        const resultState = this.wait("appended",()=>{
-            const parentStatus = this.process.getNode("appendBackend").getStateSelf();
-            parentStatus !== "success"
-        });
+        const result = this.wait(this.checkCondition.bind(this));
         Logger.log("resultState = %s in %s",resultState,this.getName());
 
-        if(resultState != "appended"){
-            return resultState;
+        if(result === "approved"){
+            sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         }
-        sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         // sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         return true;
     }
@@ -81,12 +76,10 @@ class SendManagementEmail extends TimeoutTask {
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === true){
             this.logSelf(message);
-            this.deconstruct();
             this.process.deconstructTree(); // process is done!
         }else if(message == "stopped"){
-            this.updateStateSelf("stopped");
+            this.updateStateSelf("stopped"); // signalling a reboot from parent
         }
-        // tree was deconstructed
     }
 }
 

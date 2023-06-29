@@ -5,9 +5,10 @@ class HasCoachingBackend extends ApprovalTask {
 
     run(){
         Logger.log(this.process.rootKey);
-        const reader = Custom_Utilities.getMemoizedReads(cache);
-        const formResponse = reader(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
-        const colMap = mkColMap(reader(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
+        if(!this.shouldRun())return; //denied,successful, or running
+        // if true then the state has been set to running
+        
+        const [formResponse,colMap] = getFormResponseAndMap(); // gets the form response row and the column map of headers
         const email = formResponse[colMap.get("Email Address")];
         const hasBackend = OperationCoachingMembers.isInEmailSet(formResponse[colMap.get("Email Address")].toLowerCase());
         return hasBackend ? false : [email,`Your WFM team ${(EmailToWFM.getAgentObj["Team"] || "No Teamd")} does not map to a backend to store the data. Please, reach out to your supervisor`];

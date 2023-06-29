@@ -5,13 +5,13 @@ class CheckEvalId extends ApprovalTask {
 
   run(){
     Logger.log(this.process.rootKey);
-    const readFromCache = Custom_Utilities.getMemoizedReads(cache);
-    const formResponse = readFromCache(BACKEND_ID_TEST,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
-    const colMap = mkColMap(readFromCache(BACKEND_ID_TEST,"Submissions!1:1").values[0]);
+    if(!this.shouldRun())return; //denied,successful, or running
+    // if true then the state has been set to running
+    
+    const [formResponse,colMap] = getFormResponseAndMap(); // gets the form response row and the column map of headers
     const email = formResponse[colMap.get("Email Address")];
     const agentObj = EmailToWFM.getAgentObj(email);
     if(!agentObj){
-        Logger.log("skipped")
         return "skip";
     }
     const isValid = validate(formResponse, colMap, agentObj);

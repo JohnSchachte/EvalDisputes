@@ -15,8 +15,6 @@ class Task {
       this.name = name;
       this.taskKey = taskKey;
       this.process = process;
-      this.ss =  SpreadsheetApp.openById(BACKEND_ID_TEST); // make this the id of the spreadsheet of information
-
     }
   /**
   * Retrieves a node by its name from children, siblings or parents.
@@ -31,6 +29,24 @@ class Task {
     * @returns {string} The name of the task.
     */
     getName(){return this.name;}
+  /**
+  * Sets a parent for the task.
+  * @param {Task} node - The parent task.
+  */
+  setParent(node){
+    this.parents.set(node.getName(),node);
+  }
+
+  /**
+  * Sets multiple parents for the task.
+  * @param {Array<Task>} nodes - The parent tasks.
+  */
+  setParents(nodes){
+    for(let node of nodes){
+      this.setParent(node);
+    }
+  }
+
   /**
   * Sets a sibling for the task.
   * @param {Task} node - The sibling task.
@@ -128,21 +144,23 @@ class Task {
         //Implement this in child classes
         throw new Error('You have to implement the method deconstruct!');
     }
- /**
-  * Checks the state of the neighbors.
-  * @param {Array<Task>} neighbors - The neighbor tasks.
-  * @param {string} state - The state to check.
-  * @returns {boolean} True if all neighbors are in the given state, false otherwise.
-  */
-    checkNeighborsState(neighbors,state){
-      let result = true;
-      neighbors.forEach(neighbor => {
-        if (neighbor.getStateSelf() !== state) {
-          result = false;
-        }
-      });
-      return result;
-    }
+  /**
+    * Checks the state of the neighbors.
+    * @param {Array<Task>} neighbors - The neighbor tasks.
+    * @param {string} state - The state to check.
+    * @returns {boolean} True if all neighbors are in the given state, false otherwise.
+    */
+  checkNeighborsState(neighbors, state) {
+    return neighbors.every(neighbor => neighbor.getStateSelf() === state);
+  }
+
+  checkSomeNeighborsState(neighbors,state){
+    return neighbors.some(neighbor => neighbor.getStateSelf() === state);
+  }
+
+  getNeighborsState(neighbors){
+    return neighbors.map(neighbor => neighbor.getStateSelf());
+  }
 
   /**
   * Checks the state of the neighbors.

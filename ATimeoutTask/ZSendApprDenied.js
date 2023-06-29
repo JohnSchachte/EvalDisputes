@@ -12,23 +12,20 @@ class SendApproval extends TimeoutTask {
     }
 
     run(){
-        const startState = this.getStateSelf();
-        if( startState === "success" || startState === "running") return null;//do nothing because it's already run or is running.
-        this.updateStateSelf("running");
-        const reader = Custom_Utilities.getMemoizedReads(cache);
-        // const formResponse = reader(BACKEND_ID,`Submissions!${this.process.rootKey}:${this.process.rootKey}`).values[0]; 
-        // const colMap = mkColMap(reader(BACKEND_ID,"Submissions!1:1").values[0]);
+        if(!this.shouldRun())return; //denied,successful, or running
+        // if true then the state has been set to running
+        const [formResponse,colMap] = getFormResponseAndMap(); // gets the form response row and the column map of headers
         const template = HtmlService.createTemplateFromFile("html/Approved");
-        const resultState = this.wait("approved",()=>{
-            return state !== "success";
-        });
+        //wait for parents or other events described in timeout task
+        const result = this.wait(this.checkCondition.bind(this));
+
         Logger.log("resultState = %s in %s",resultState,this.getName());
-        if(resultState != "approved"){
-            return resultState;
+        if(result === "approved"){
+            //parents have approved
+            sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
+            // sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
         }
-        sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
-        // sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
-        return true;
+        return result; // approved, denied, or stopped
     }
 
     logSelf(message){
@@ -41,16 +38,13 @@ class SendApproval extends TimeoutTask {
 
     onSuccess(message){
         Logger.log("message = %s in subprocess = %s",message,this.getName());
-        if(message === true){
+        if(message === "approved"){
             this.logSelf(message);
             this.updateStateSelf("success")
-        }else if(message === null){
-            return;
-        }else{
+        }else if(message === "stopped"){
             Logger.log("SendApproval did not send");
             this.updateStateSelf("stopped");
         }
-        // this.updateStateSelf("success");
     }
 }
 
@@ -69,7 +63,7 @@ class SendDenied extends Task{
     }
 
     run(email,reason){
-        this.updateStateSelf("running");
+        if(!this.shouldRun())return; //denied,successful, or running
         const template = HtmlService.createTemplateFromFile("html/DeniedEmail");
         template.denialReason = reason;
         sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);

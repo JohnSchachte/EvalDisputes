@@ -1,15 +1,6 @@
-class TimeoutTask extends Task {
+class TimeoutTask extends CommonTask {
     constructor(name,process, taskKey) {
       super(name,process, taskKey);
-    }
-
-    setTriggerSelf(key = this.taskKey) {
-        // Specific implementation for SpecificTask
-        setTrigger(key);
-    }
-  
-    fireTriggerSelf(){
-        Custom_Utilities.fireTrigger();
     }
 
     getTimeout(){
@@ -38,38 +29,22 @@ class TimeoutTask extends Task {
         this.process.storage.remove(this.taskKey+"timeout");
     }
 
-    wait(targetState,condition = ()=>true,delay = 500){
-        let processState = this.process.getState();
-        // processState is the targetState && within Timeout && the process has not deconstructed itself && this process has not been killed by parent.
-        while(processState !== targetState && new Date().getTime() < this.getTimeout() && processState &&
-            processState !== "denied" && this.getStateSelf() !== "killed" && condition()){
-            Utilities.sleep(delay);
-            processState = this.process.getState();
-            Logger.log("waiting");
-        }
-        let stateSelf = this.getStateSelf();
-        // if(!processState || processState === "denied") this.deconstruct(); // free all memory. Parent deconstructs tree but I'm worried this process may have saved state.
-        return stateSelf === "killed" || new Date() > this.getTimeout() ? "stopped" : processState;
-    }
-
-    rebootChildren(){
-        const fiveMins = new Date().getTime() + 300000;
-        this.children.forEach(child => {
-            if(child instanceof TimeoutTask){
-                child.setTimeout(fiveMins);
-            }
-            const stoppedStates = new Set(["stopped","killed",null]);
-            if(stoppedStates.has(child.getStateSelf())){
-                child.setTriggerSelf();
-                child.updateStateSelf("pending");
-            }
-        });
-        Custom_Utilities.fireTrigger(); // fires all the triggers that were just set.
-    }
+    wait(condition = ()=>({ continue: true }), delay = 500) {
+      let processState = this.process.getState();
+      let conditionResult = condition();
+      while(conditionResult.continue) {
+          Utilities.sleep(delay);
+          processState = this.process.getState();
+          conditionResult = condition();
+          Logger.log("waiting");
+      }
+      return conditionResult.condition; 
+  }
+  
 
     onFailure(message){
         Logger.log(message);
-        this.updateStateSelf("err");
+        this.updateStateSelf("error");
         // kill all downstream processes
         this.updateNeighborsState(this.children,"killed");
         const errorQueue = this.ss.getSheetByName("Errors");
@@ -81,4 +56,64 @@ class TimeoutTask extends Task {
         task.push(message);
         this.ss.getSheetByName("Error_Log").appendRow(task);
     }
+
+    mkCaseArray(submitRow,colMap, evalType){
+        const row = new Array(11);
+        row[1] = submitRow[colMap.get("Timestamp")];
+        row[5] = submitRow[colMap.get(evalType === "phone" ? "What is the Record Id for the Evaluation" : "What is the Chat Id for the Evaluation")];
+        row[6] = CoachingRequestScripts.getTicketNumber(submitRow[colMap.get("Ticket Number?")],submitRow[colMap.get("Do you have a Ticket Number?")].startsWith("Y"));
+        row[7] = "High"; //because they want these processed with 24hrs
+        row[8] = `Evaluation Dispute : ${submitRow[colMap.get("What is your reason for disputing?")]}`; // category field
+        row[10] = submitRow[colMap.get("Add any related files you'd like to share")];
+        return row;
+      }
+      
+      formatAdditionalComments(submitRow,colMap,relAgent,evalDate){
+        let additionalContext = "";
+        if(!BAD_VALUES.has(submitRow[colMap.get("What is your reason for disputing?")])){
+          additionalContext += submitRow[colMap.get("What is your reason for disputing?")];
+        }
+        if(!BAD_VALUES.has(submitRow[colMap.get("SOP or KB article?")])){
+          additionalContext += ": "+submitRow[colMap.get("SOP or KB article?")];
+        }
+        if(relAgent){
+          additionalContext += "\nReliability Agent: "+relAgent; 
+        }
+        if(evalDate){
+          additionalContext+= "\nEvaluation Date: " + evalDate;
+        }
+      
+        if(!BAD_VALUES.has(submitRow[colMap.get("Additional Comments")])){
+          additionalContext += "\n\nAdditional Comments: "+submitRow[colMap.get("Additional Comments")];
+        }
+        return additionalContext;
+      }
+      
+      getHttp(team,cache){
+        const getTeams = Custom_Utilities.memoize( () => CoachingRequestScripts.getTeams(REPORTING_ID),cache);
+        const teams = getTeams();
+        for(let i=0;i<teams.length;i++){
+          if(teams[i].values[0].includes(team)){
+            return teams[i].values[0][2]; // replace this with web app url
+          }
+        }
+        throw new Error("Team is not on Operation Coaching Master Sheet");
+      }
+
+      checkCondition() {
+        const neighborsState = this.getNeighborsState(this.parents);
+        const allNull = neighborsState.every(state => state === null) && this.process.getState() === null;
+        const allApproved = neighborsState.every(state => state === "approved");
+        const anyError = neighborsState.some(state => state === "error");
+        const selfSuccess = this.getStateSelf() === "success";
+        const timeoutExceeded = new Date().getTime() >= this.getTimeout();
+    
+        if (allNull) return { condition: 'allNull', continue: false };
+        if (allApproved) return { condition: 'allApproved', continue: false };
+        if (anyError) return { condition: 'anyError', continue: false };
+        if (selfSuccess) return { condition: 'selfSuccess', continue: false };
+        if (timeoutExceeded) return { condition: 'timeoutExceeded', continue: false };
+    
+        return { condition: null, continue: true };
+      }
 }

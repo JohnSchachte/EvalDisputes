@@ -22,6 +22,8 @@ function mkProcess(rootKey,) {
   checkEvalId.setChildren(secondDepth);
   hasCoachingBackend.setChildren(secondDepth);
 
+  appendBackend.setParents([hasCoachingBackend,checkEvalId]);
+  sendApproval.setParents([hasCoachingBackend,checkEvalId]);
   // appendBackend.setSiblings([sendApproval, sendDenied]);
   // sendApproval.setSiblings([appendBackend, sendDenied]);
   // sendDenied.setSiblings([appendBackend, sendApproval]);
@@ -30,6 +32,7 @@ function mkProcess(rootKey,) {
   const sendManagementEmail = new SendManagementEmail("sendManagementEmail", process);
   children.set(sendManagementEmail.name, sendManagementEmail);
   appendBackend.setChild(sendManagementEmail);
+  sendManagementEmail.setParent(appendBackend);
 
   process.setTree(children); // Pass the children map to setTree
   return process;
