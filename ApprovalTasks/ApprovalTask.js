@@ -23,10 +23,10 @@ class ApprovalTask extends CommonTask{
             // move to approved state
             this.updateStateSelf("success");
             this.rebootChildren();
-        }else if(message === "skip"){
+        }else if(message === "skipped"){
             this.deconstruct();
             this.deconstructNeighbors(this.siblings);
-        }else{
+        }else if(Array.isArray(message)){
             // deny all downstream processes. not time sensitive.
             const denyProcess = this.process.children.get("sendDenied");
             denyProcess.setTriggerSelf(JSON.stringify([denyProcess.name,...message]));

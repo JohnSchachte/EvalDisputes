@@ -12,7 +12,7 @@ class CheckEvalId extends ApprovalTask {
     const email = formResponse[colMap.get("Email Address")];
     const agentObj = EmailToWFM.getAgentObj(email);
     if(!agentObj){
-        return "skip";
+        return "skipped";
     }
     const isValid = validate(formResponse, colMap, agentObj);
     return isValid ?
