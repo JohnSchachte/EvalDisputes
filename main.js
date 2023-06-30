@@ -40,7 +40,6 @@ function initiateTask(e){
   Logger.log("task = %s",task);
   const [jobName, formId] = task;
   initializeStarts(formId+'', jobName);
-
 }
 
 function doErrors(e){
@@ -55,7 +54,7 @@ function doErrors(e){
     Custom_Utilities.exponentialBackoff(() => UrlFetchApp.fetch(url, options));
   }
   fireTrigger();
-  const ss = SpreadsheetApp.openById(BACKEND_ID);
+  const ss = SpreadsheetApp.openById(BACKEND_ID_TEST);
   // all items needed to make tasks and jobs
   const errorQueue = ss.getSheetByName("Errors");
   
@@ -67,8 +66,12 @@ function doErrors(e){
     const process = mkProcess(formId);
     !process.getState() ? process.setState("running") : false;
     const node = process.getNode(jobName);
-    node.setTriggerSelf(JSON.stringify(task));
-    node.fireTriggerSelf();
+    try{
+      node.setTriggerSelf(JSON.stringify(task));
+      node.fireTriggerSelf();
+    }catch(f){
+      
+    }
     errorQueue.deleteRow(2); // delete the task at head of queue
   });
 }
