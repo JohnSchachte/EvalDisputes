@@ -23,7 +23,7 @@ class SendApproval extends TimeoutTask {
         if(result === "approved"){
             //parents have approved
             // sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
-            sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
+            sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sent to Supervisor",template);
         }
         return result; // approved, denied, or stopped
     }
