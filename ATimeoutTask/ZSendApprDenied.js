@@ -46,6 +46,8 @@ class SendApproval extends TimeoutTask {
             this.updateStateSelf("stopped");
         }
     }
+
+
 }
 
 class SendDenied extends Task{

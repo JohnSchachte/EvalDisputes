@@ -63,8 +63,8 @@ class Process {
   }
   
   deconstructTree(){
-      this.storage.remove(this.rootKey+"state");
       this.children.forEach(child => child.deconstruct());
   }
 }
+Process.prototype.endStates = new Set(["denied","success"]);
   

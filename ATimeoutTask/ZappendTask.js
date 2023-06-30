@@ -81,6 +81,7 @@ class AppendBackend extends TimeoutTask {
             this.rebootChildren();
             this.logSelf(message);
             this.updateStateSelf("success");
+            this.updateProcess("appended");
         }else if(message === "stopped"){
             // parent errored and killed all children.
             this.updateStateSelf("stopped");

@@ -99,20 +99,22 @@ class TimeoutTask extends CommonTask {
         }
         throw new Error("Team is not on Operation Coaching Master Sheet");
       }
-
       checkCondition() {
         const neighborsState = this.getNeighborsState(this.parents);
-        const allNull = neighborsState.every(state => state === null) && this.process.getState() === null;
-        const allApproved = neighborsState.every(state => state === "success");
-        const anyError = neighborsState.some(state => state === "error");
-        const selfSuccess = this.getStateSelf() === "success";
-        const timeoutExceeded = new Date().getTime() >= this.getTimeout();
-    
-        if (allNull) return { condition: null, continue: false };
-        if (allApproved) return { condition: 'approved', continue: false };
-        if (anyError) return { condition: 'stopped', continue: false };
-        if (selfSuccess) return { condition: null, continue: false };
-        if (timeoutExceeded) return { condition: 'stopped', continue: false };
+        const processState = this.process.getState();
+        const allNull = neighborsState.every(state => state === null) && processState  === null; //statiscally garbage collected.
+        const allApproved = neighborsState.every(state => state === "success") || processState === "appproved";
+        const anyError = neighborsState.some(state => state === "error"); // parent has errored and needs to reboot children.
+        const selfSuccess = this.getStateSelf() === "success"; // this task has already succeeded
+        const timeoutExceeded = new Date().getTime() >= this.getTimeout(); // timeout has exceeded
+        const checkProcessState = this.process.endStates.has(this.process.getState()); // process has been denied or succeeded so we should stop.
+        
+        if(checkProcessState) return { condition: null, continue: false }; // process has been denied or succeeded so we should stop.
+        if (allNull) return { condition: null, continue: false }; //statiscally garbage collected.
+        if (allApproved) return { condition: 'approved', continue: false }; // all parents have succeeded
+        if (anyError) return { condition: 'stopped', continue: false }; // parent has errored and needs to reboot children.
+        if (selfSuccess) return { condition: null, continue: false }; // this task has already succeeded
+        if (timeoutExceeded) return { condition: 'stopped', continue: false }; // timeout has exceeded
     
         return { condition: null, continue: true };
       }

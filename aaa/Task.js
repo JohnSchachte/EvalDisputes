@@ -21,14 +21,14 @@ class Task {
   * @param {string} name - The name of the node.
   * @returns {Node} The node.
   */
-    getNode(name){
-      return (this.children.get(name) || this.siblings.get(name) || this.parents.get(name));
-    }
-    /**
-    * Returns the name of the task.
-    * @returns {string} The name of the task.
-    */
-    getName(){return this.name;}
+  getNode(name){
+    return (this.children.get(name) || this.siblings.get(name) || this.parents.get(name));
+  }
+  /**
+  * Returns the name of the task.
+  * @returns {string} The name of the task.
+  */
+  getName(){return this.name;}
   /**
   * Sets a parent for the task.
   * @param {Task} node - The parent task.
