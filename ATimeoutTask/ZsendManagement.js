@@ -57,8 +57,8 @@ class SendManagementEmail extends TimeoutTask {
         Logger.log("resultState = %s in %s",result,this.getName());
 
         if(result === "approved"){
-            // sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
-            sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+            sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+            // sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         }
         return result;
     }
@@ -73,8 +73,8 @@ class SendManagementEmail extends TimeoutTask {
     onSuccess(message){
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === "approved"){
-            this.logSelf(message);
             this.updateProcess("success");
+            this.logSelf(message);
             // garbage collection will clean up the storage.
             this.process.deconstructTree();
         }else if(message == "stopped"){

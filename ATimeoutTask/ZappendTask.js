@@ -11,11 +11,13 @@ class AppendBackend extends TimeoutTask {
     }
 
     logSelf(message){
-        // false means approval
+        Logger.log("logging submissions sheet")
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
         this.ss.getSheetByName("Backend_Log").appendRow(task);
+
+        this.ss.getSheetByName("Submissions").getRange("L"+this.process.rootKey).setValue(message)
     }
 
     
@@ -75,13 +77,13 @@ class AppendBackend extends TimeoutTask {
     onSuccess(message){
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         
-        if(message && (message !== "denied" || message !== "stopped")){
+        if(message && (message !== "denied" || message !== "stopped" || message !== "decon")){
             Logger.log("appendBackend is successful. should change process state to appended and self to success");
             // success
             this.rebootChildren();
-            this.logSelf(message);
             this.updateStateSelf("success");
             this.updateProcess("appended");
+            this.logSelf(message);
         }else if(message === "stopped"){
             // parent errored and killed all children.
             this.updateStateSelf("stopped");

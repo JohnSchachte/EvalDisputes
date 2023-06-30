@@ -39,8 +39,8 @@ class SendApproval extends TimeoutTask {
     onSuccess(message){
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === "approved"){
-            this.logSelf(message);
             this.updateStateSelf("success");
+            this.logSelf(message);
         }else if(message === "stopped"){
             Logger.log("SendApproval did not send");
             this.updateStateSelf("stopped");
