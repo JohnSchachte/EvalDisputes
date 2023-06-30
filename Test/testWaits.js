@@ -78,19 +78,19 @@ function testSendManagementSuccess(){
   // append.onSuccess(result);
   // Logger.log(result);
 
-  const hasBackend = process.getNode("hasCoachingBackend");
-  let result = hasBackend.run();
-  hasBackend.onSuccess(result);
+  // const hasBackend = process.getNode("hasCoachingBackend");
+  // let result = hasBackend.run();
+  // hasBackend.onSuccess(result);
 
-  const checkEvalId = process.getNode("checkEvalId");
-  result = checkEvalId.run();
-  checkEvalId.onSuccess(result);
+  // const checkEvalId = process.getNode("checkEvalId");
+  // result = checkEvalId.run();
+  // checkEvalId.onSuccess(result);
 
 
 
-  // const sendManagementEmail = process.getNode("sendManagementEmail");
-  // result = sendManagementEmail.run();
-  // sendManagementEmail.onSuccess(result);
-  // Logger.log(result);
+  const sendManagementEmail = process.getNode("sendManagementEmail");
+  let result = sendManagementEmail.run();
+  sendManagementEmail.onSuccess(result);
+  Logger.log(result);
   
 }
