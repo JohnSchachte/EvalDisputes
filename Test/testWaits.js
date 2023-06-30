@@ -1,8 +1,13 @@
 const testId = "41"
+let testEvent = {
+  range: {
+      rowStart: testId
+  }
+}
 function testAppendBackendTimeout(){
+    initializeProcessRunning(testEvent);
     const process = mkProcess(testId);
     const append = process.getNode("appendBackend");
-    append.updateProcess("running");
     append.setTimeout(10000);
     const result = append.run();
     append.onSuccess(result);

@@ -74,7 +74,8 @@ class SendManagementEmail extends TimeoutTask {
         Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === true){
             this.logSelf(message);
-            this.process.deconstructTree(); // process is done!
+            this.process.updateState("success");
+            // garbage collection will clean up the storage.
         }else if(message == "stopped"){
             this.updateStateSelf("stopped"); // signalling a reboot from parent
         }

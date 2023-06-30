@@ -1,3 +1,9 @@
+function initializeProcessRunning(e){
+  const jobName = "checkEvalId";
+  const formId = e ? e.range.rowStart : "41";
+  new Storage().set(formId+"state","running");
+}
+
 function startCheckEval(e){
   const jobName = "checkEvalId";
   const formId = e ? e.range.rowStart : "41";
