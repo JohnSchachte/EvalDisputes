@@ -19,10 +19,10 @@ function sendEmail(recipients,subject,template){
 
 
 function deepFind (type, id){
-  Logger.log("searching deeper for id");
+  // Logger.log("searching deeper for id");
   const values = Custom_Utilities.transpose(type === "phone" ? AgentEvaluationForm.getRecordIds() : AgentEvaluationForm.getChatIds());
   const result = AgentEvaluationForm.mkIdObjs(values)[id];
-  Logger.log(result)
+  // Logger.log(result)
   return result ? result.split("#") : result; // if false then result is null; have to done it like this or it will try to split a null value;
 }
 

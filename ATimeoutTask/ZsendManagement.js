@@ -54,11 +54,11 @@ class SendManagementEmail extends TimeoutTask {
         template.vars = vars;
         
         const result = this.wait(this.checkCondition.bind(this));
-        Logger.log("resultState = %s in %s",result,this.getName());
+        // Logger.log("resultState = %s in %s",result,this.getName());
 
         if(result === "approved"){
-            sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
-            // sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+            // sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
+            sendEmail(CoachingRequestScripts.getEmails(agentObject),"Agent Evaluation Dispute: " + agentObject["Employee Name"],template);
         }
         return result;
     }
@@ -71,7 +71,6 @@ class SendManagementEmail extends TimeoutTask {
     }
     
     onSuccess(message){
-        Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === "approved"){
             this.updateProcess("success");
             this.logSelf(message);
@@ -81,8 +80,9 @@ class SendManagementEmail extends TimeoutTask {
             this.updateStateSelf("stopped"); // signalling a reboot from parent
         }else if(message === "decon"){
             this.deconstruct();
-        // tree was deconstructed
+            // tree was deconstructed
         }
+        Logger.log("message = %s in subprocess = %s",message,this.getName());
     }
 
     checkCondition() {

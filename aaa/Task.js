@@ -52,7 +52,7 @@ class Task {
   * @param {Task} node - The sibling task.
   */
     setSibling(node){
-      Logger.log("setting %s as sibling to %s",node.getName(),this.name);
+      // Logger.log("setting %s as sibling to %s",node.getName(),this.name);
       this.siblings.set(node.getName(),node);
     }
     /**

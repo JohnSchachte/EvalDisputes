@@ -4,7 +4,7 @@ class HasCoachingBackend extends ApprovalTask {
     }
 
     run(){
-        Logger.log(this.process.rootKey);
+        // Logger.log(this.process.rootKey);
         if(!this.shouldRun())return; //denied,successful, or running
         // if true then the state has been set to running
         

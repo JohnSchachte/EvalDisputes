@@ -43,18 +43,18 @@ class TimeoutTask extends CommonTask {
   
 
     onFailure(message){
-        Logger.log(message);
-        this.updateStateSelf("error");
-        // kill all downstream processes
-        this.updateNeighborsState(this.children,"killed");
-        const errorQueue = this.ss.getSheetByName("Errors");
-        // apppend itself and all downstream processes
-        const task = JSON.parse(this.taskKey);
-        errorQueue.appendRow(task);
-        Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
-        task.push(new Date().toLocaleString());// col 4 should be the date update column
-        task.push(message);
-        this.ss.getSheetByName("Error_Log").appendRow(task);
+      this.updateStateSelf("error");
+      // kill all downstream processes
+      this.updateNeighborsState(this.children,"killed");
+      const errorQueue = this.ss.getSheetByName("Errors");
+      // apppend itself and all downstream processes
+      const task = JSON.parse(this.taskKey);
+      errorQueue.appendRow(task);
+      Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
+      task.push(new Date().toLocaleString());// col 4 should be the date update column
+      task.push(message);
+      this.ss.getSheetByName("Error_Log").appendRow(task);
+      Logger.log(message);
     }
 
     mkCaseArray(submitRow,colMap, evalType){
@@ -109,12 +109,12 @@ class TimeoutTask extends CommonTask {
         const timeoutExceeded = new Date().getTime() >= this.getTimeout(); // timeout has exceeded
         const checkProcessState = this.process.endStates.has(this.process.getState()); // process has been denied or succeeded so we should stop.
         
-        Logger.log("allNull: " + allNull);
-        Logger.log("allApproved: " + allApproved);
-        Logger.log("anyError: " + anyError);
-        Logger.log("selfSuccess: " + selfSuccess);
-        Logger.log("timeoutExceeded: " + timeoutExceeded);
-        Logger.log("checkProcessState: " + checkProcessState);
+        // Logger.log("allNull: " + allNull);
+        // Logger.log("allApproved: " + allApproved);
+        // Logger.log("anyError: " + anyError);
+        // Logger.log("selfSuccess: " + selfSuccess);
+        // Logger.log("timeoutExceeded: " + timeoutExceeded);
+        // Logger.log("checkProcessState: " + checkProcessState);
         
         if(checkProcessState) return { condition: null, continue: false }; // process has been denied or succeeded so we should stop.
         if (allNull) return { condition: "decon", continue: false }; //statiscally garbage collected.

@@ -17,7 +17,6 @@ class ApprovalTask extends CommonTask{
 
     // ... implement other methods ...
     onSuccess(message) {
-        Logger.log("onSuccess message %s",message);
         if(!message){
             this.logSelf(message);
             // move to approved state
@@ -41,10 +40,10 @@ class ApprovalTask extends CommonTask{
             // destroy tree except for process state. Garbage collection will take care of the rest.
             this.process.deconstructTree(); // termination of process when denied.
         }
+        Logger.log("onSuccess message %s",message);
     }
-
+    
     onFailure(message){
-        Logger.log("OnFailure message = %s",message);
         this.updateStateSelf("error"); // tell other processes that there was a failure. process state remains running.
         // kill all downstream processes
         this.updateNeighborsState(this.children,"killed");
@@ -56,5 +55,6 @@ class ApprovalTask extends CommonTask{
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);
         this.ss.getSheetByName("Error_Log").appendRow(task);
+        Logger.log("OnFailure message = %s",message);
     }
 }

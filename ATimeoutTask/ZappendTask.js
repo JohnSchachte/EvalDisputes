@@ -11,19 +11,19 @@ class AppendBackend extends TimeoutTask {
     }
 
     logSelf(message){
-        Logger.log("logging submissions sheet")
         const task = JSON.parse(this.taskKey);
         task.push(message);
         task.push(new Date().toLocaleString());
         this.ss.getSheetByName("Backend_Log").appendRow(task);
-
+        
         this.ss.getSheetByName("Submissions").getRange("L"+this.process.rootKey).setValue(message)
+        Logger.log("logging submissions sheet")
     }
 
     
     run(){
-        Logger.log(this.process.rootKey);
         
+        // Logger.log(this.process.rootKey);
         if(!this.shouldRun())return; //denied,successful, or running
         // if true then the state has been set to running
         const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
@@ -65,7 +65,7 @@ class AppendBackend extends TimeoutTask {
         requestOptions["payload"] = JSON.stringify(caseArray); // prepare for request
         const result = this.wait(this.checkCondition.bind(this));
         
-        Logger.log("resultState = %s in %s",result,this.getName());
+        // Logger.log("resultState = %s in %s",result,this.getName());
         if(result === "approved"){
             //appending to backend
             const response = CoachingRequestScripts.fetchWithOAuth(endPoint,requestOptions); //parsed json.
@@ -75,10 +75,9 @@ class AppendBackend extends TimeoutTask {
     }
 
     onSuccess(message){
-        Logger.log("message = %s in subprocess = %s",message,this.getName());
         
         if(message && (message !== "denied" || message !== "stopped" || message !== "decon")){
-            Logger.log("appendBackend is successful. should change process state to appended and self to success");
+            // Logger.log("appendBackend is successful. should change process state to appended and self to success");
             // success
             this.rebootChildren();
             this.updateStateSelf("success");
@@ -89,7 +88,8 @@ class AppendBackend extends TimeoutTask {
             this.updateStateSelf("stopped");
         }else if(message === "decon"){
             this.deconstruct();
-        // tree was deconstructed
+            // tree was deconstructed
         }
+        Logger.log("message = %s in subprocess = %s",message,this.getName());
     }
 }

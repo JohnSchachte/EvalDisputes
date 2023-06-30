@@ -21,7 +21,7 @@ class CommonTask extends Task {
             if(this.stoppedStates.has(child.getStateSelf())){
                 child.setTriggerSelf();
                 child.updateStateSelf("pending");
-                Logger.log("set = %s trigger",child.getName());
+                // Logger.log("set = %s trigger",child.getName());
             }
         });
      

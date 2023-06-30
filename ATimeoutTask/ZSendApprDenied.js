@@ -19,7 +19,7 @@ class SendApproval extends TimeoutTask {
         //wait for parents or other events described in timeout task
         const result = this.wait(this.checkCondition.bind(this));
 
-        Logger.log("resultState = %s in %s",result,this.getName());
+        // Logger.log("resultState = %s in %s",result,this.getName());
         if(result === "approved"){
             //parents have approved
             // sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
@@ -37,17 +37,16 @@ class SendApproval extends TimeoutTask {
     }
 
     onSuccess(message){
-        Logger.log("message = %s in subprocess = %s",message,this.getName());
         if(message === "approved"){
             this.updateStateSelf("success");
             this.logSelf(message);
         }else if(message === "stopped"){
-            Logger.log("SendApproval did not send");
             this.updateStateSelf("stopped");
         }else if(message === "decon"){
             this.deconstruct();
-        // tree was deconstructed
+            // tree was deconstructed
         }
+        Logger.log("message = %s in subprocess = %s",message,this.getName());
     }
 }
 
