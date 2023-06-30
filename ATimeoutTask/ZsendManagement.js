@@ -85,7 +85,7 @@ class SendManagementEmail extends TimeoutTask {
         const neighborsState = this.getNeighborsState(this.parents);
         const processState = this.process.getState();
         const allNull = neighborsState.every(state => state === null) && processState  === null; //statiscally garbage collected.
-        const allApproved = neighborsState.every(state => state === "approved") || processState === "approved"; // all parents have succeeded
+        const allApproved = neighborsState.every(state => state === "success") || processState === "appended"; // all parents have succeeded
         const anyError = neighborsState.some(state => state === "error"); // parent has errored and needs to reboot children.
         const selfSuccess = this.getStateSelf() === "success"; // this task has already succeeded
         const timeoutExceeded = new Date().getTime() >= this.getTimeout(); // timeout has exceeded
