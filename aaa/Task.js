@@ -144,23 +144,33 @@ class Task {
         //Implement this in child classes
         throw new Error('You have to implement the method deconstruct!');
     }
-  /**
-    * Checks the state of the neighbors.
-    * @param {Array<Task>} neighbors - The neighbor tasks.
-    * @param {string} state - The state to check.
-    * @returns {boolean} True if all neighbors are in the given state, false otherwise.
-    */
-  checkNeighborsState(neighbors, state) {
-    return neighbors.every(neighbor => neighbor.getStateSelf() === state);
-  }
-
-  checkSomeNeighborsState(neighbors,state){
-    return neighbors.some(neighbor => neighbor.getStateSelf() === state);
-  }
-
-  getNeighborsState(neighbors){
-    return neighbors.map(neighbor => neighbor.getStateSelf());
-  }
+    checkNeighborsState(neighbors, state) {
+      let allInState = true;
+      neighbors.forEach((value, key) => {
+        if (value.getStateSelf() !== state) {
+          allInState = false;
+        }
+      });
+      return allInState;
+    }
+    
+    checkSomeNeighborsState(neighbors, state) {
+      let someInState = false;
+      neighbors.forEach((value, key) => {
+        if (value.getStateSelf() === state) {
+          someInState = true;
+        }
+      });
+      return someInState;
+    }
+    
+    getNeighborsState(neighbors) {
+      const states = [];
+      neighbors.forEach((value, key) => {
+        states.push(value.getStateSelf());
+      });
+      return states;
+    }
 
   /**
   * Checks the state of the neighbors.

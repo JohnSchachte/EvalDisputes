@@ -54,7 +54,7 @@ class SendManagementEmail extends TimeoutTask {
         template.vars = vars;
         
         const result = this.wait(this.checkCondition.bind(this));
-        Logger.log("resultState = %s in %s",resultState,this.getName());
+        Logger.log("resultState = %s in %s",result,this.getName());
 
         if(result === "approved"){
             sendEmail("jschachte@shift4.com","Agent Evaluation Dispute: " + agentObject["Employee Name"],template);

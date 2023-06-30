@@ -103,16 +103,16 @@ class TimeoutTask extends CommonTask {
       checkCondition() {
         const neighborsState = this.getNeighborsState(this.parents);
         const allNull = neighborsState.every(state => state === null) && this.process.getState() === null;
-        const allApproved = neighborsState.every(state => state === "approved");
+        const allApproved = neighborsState.every(state => state === "success");
         const anyError = neighborsState.some(state => state === "error");
         const selfSuccess = this.getStateSelf() === "success";
         const timeoutExceeded = new Date().getTime() >= this.getTimeout();
     
-        if (allNull) return { condition: 'allNull', continue: false };
-        if (allApproved) return { condition: 'allApproved', continue: false };
-        if (anyError) return { condition: 'anyError', continue: false };
-        if (selfSuccess) return { condition: 'selfSuccess', continue: false };
-        if (timeoutExceeded) return { condition: 'timeoutExceeded', continue: false };
+        if (allNull) return { condition: null, continue: false };
+        if (allApproved) return { condition: 'approved', continue: false };
+        if (anyError) return { condition: 'stopped', continue: false };
+        if (selfSuccess) return { condition: null, continue: false };
+        if (timeoutExceeded) return { condition: 'stopped', continue: false };
     
         return { condition: null, continue: true };
       }

@@ -19,7 +19,7 @@ class SendApproval extends TimeoutTask {
         //wait for parents or other events described in timeout task
         const result = this.wait(this.checkCondition.bind(this));
 
-        Logger.log("resultState = %s in %s",resultState,this.getName());
+        Logger.log("resultState = %s in %s",result,this.getName());
         if(result === "approved"){
             //parents have approved
             sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
