@@ -22,8 +22,8 @@ class SendApproval extends TimeoutTask {
         Logger.log("resultState = %s in %s",result,this.getName());
         if(result === "approved"){
             //parents have approved
-            sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
-            // sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
+            // sendEmail("jschachte@shift4.com","Evaluation Dispute Approved",template);
+            sendEmail(formResponse[colMap.get("Email Address")],"Evaluation Dispute Sdent to Supervisor",template);
         }
         return result; // approved, denied, or stopped
     }
@@ -44,6 +44,9 @@ class SendApproval extends TimeoutTask {
         }else if(message === "stopped"){
             Logger.log("SendApproval did not send");
             this.updateStateSelf("stopped");
+        }else if(message === "decon"){
+            this.deconstruct();
+        // tree was deconstructed
         }
     }
 }
@@ -66,8 +69,8 @@ class SendDenied extends Task{
         if(!this.shouldRun())return; //denied,successful, or running
         const template = HtmlService.createTemplateFromFile("html/DeniedEmail");
         template.denialReason = reason;
-        sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
-        // sendEmail(email,"Evaluation Dispute Denied",template);
+        // sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
+        sendEmail(email,"Evaluation Dispute Denied",template);
         return true;
     }
 

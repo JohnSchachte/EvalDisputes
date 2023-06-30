@@ -13,5 +13,8 @@ function tryTask(node){
 function initializeStarts(formId,jobName){
   const process = mkProcess(formId);
   const node = process.getNode(jobName);
+  if(node instanceof TimeoutTask){
+    node.setTimeout(10000)
+  }
   tryTask(node);
 }

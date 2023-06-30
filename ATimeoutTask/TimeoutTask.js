@@ -109,8 +109,15 @@ class TimeoutTask extends CommonTask {
         const timeoutExceeded = new Date().getTime() >= this.getTimeout(); // timeout has exceeded
         const checkProcessState = this.process.endStates.has(this.process.getState()); // process has been denied or succeeded so we should stop.
         
+        Logger.log("allNull: " + allNull);
+        Logger.log("allApproved: " + allApproved);
+        Logger.log("anyError: " + anyError);
+        Logger.log("selfSuccess: " + selfSuccess);
+        Logger.log("timeoutExceeded: " + timeoutExceeded);
+        Logger.log("checkProcessState: " + checkProcessState);
+        
         if(checkProcessState) return { condition: null, continue: false }; // process has been denied or succeeded so we should stop.
-        if (allNull) return { condition: null, continue: false }; //statiscally garbage collected.
+        if (allNull) return { condition: "decon", continue: false }; //statiscally garbage collected.
         if (allApproved) return { condition: 'approved', continue: false }; // all parents have succeeded
         if (anyError) return { condition: 'stopped', continue: false }; // parent has errored and needs to reboot children.
         if (selfSuccess) return { condition: null, continue: false }; // this task has already succeeded

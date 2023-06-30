@@ -85,7 +85,9 @@ class AppendBackend extends TimeoutTask {
         }else if(message === "stopped"){
             // parent errored and killed all children.
             this.updateStateSelf("stopped");
-        }//denied is handled by the parent
+        }else if(message === "decon"){
+            this.deconstruct();
         // tree was deconstructed
+        }
     }
 }
