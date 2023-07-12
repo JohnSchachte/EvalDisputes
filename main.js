@@ -4,9 +4,15 @@ function initializeProcessRunning(e){
   new Storage().set(formId+"state","running");
 }
 
+function startDenial(e){
+  const jobName = "sendDenied";
+  const formId = e ? e.range.rowStart : "167"
+  initializeStarts(formId,jobName);
+}
+
 function startCheckEval(e){
   const jobName = "checkEvalId";
-  const formId = e ? e.range.rowStart : "41";
+  const formId = e ? e.range.rowStart : "167";
   initializeStarts(formId+'',jobName);
 }
 

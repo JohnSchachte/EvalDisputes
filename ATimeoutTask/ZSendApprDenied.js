@@ -50,7 +50,7 @@ class SendApproval extends TimeoutTask {
     }
 }
 
-class SendDenied extends Task{
+class SendDenied extends CommonTask{
     constructor(name,process){
         super(name,process,JSON.stringify([name,process.rootKey]));
     }
@@ -65,12 +65,15 @@ class SendDenied extends Task{
     }
 
     run(email,reason){
-        if(!this.shouldRun())return; //denied,successful, or running
-        const template = HtmlService.createTemplateFromFile("html/DeniedEmail");
-        template.denialReason = reason;
-        // sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
-        sendEmail(email,"Evaluation Dispute Denied",template);
-        return true;
+      email = email || "aduenes@shift4.com";
+      reason = reason || "The Eval Id (11111) you submitted does not appear in our records or does not appear to be an evaluation about you.";
+      //task = [sendDenied, aduenes@shift4.com, The Eval Id (11111) you submitted does not appear in our records or does not appear to be an evaluation about you.]
+        // if(!this.shouldRun())return; //denied,successful, or running
+      const template = HtmlService.createTemplateFromFile("html/DeniedEmail");
+      template.denialReason = reason;
+      // sendEmail("jschachte@shift4.com","Evaluation Dispute Denied",template);
+      sendEmail(email,"Evaluation Dispute Denied",template);
+      return true;
     }
 
     logSelf(message){
@@ -85,7 +88,20 @@ class SendDenied extends Task{
         this.logSelf(message);
         this.process.deconstructTree();
     }
+
     deconstruct(){
       this.process.storage.remove(this.taskKey+"state");
+    }
+
+    onFailure(message){
+        const errorQueue = this.ss.getSheetByName("Errors");
+        // apppend itself and all downstream processes
+        const task = JSON.parse(this.taskKey);
+        errorQueue.appendRow(task);
+        Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
+        task.push(new Date().toLocaleString());// col 4 should be the date update column
+        task.push(message);
+        this.ss.getSheetByName("Error_Log").appendRow(task);
+        Logger.log("OnFailure message = %s",message);
     }
 }
