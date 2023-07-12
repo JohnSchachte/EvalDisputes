@@ -23,7 +23,7 @@ class AppendBackend extends TimeoutTask {
     
     run(){
         
-        // Logger.log(this.process.rootKey);
+        Logger.log(this.process.rootKey);
         if(!this.shouldRun())return; //denied,successful, or running
         // if true then the state has been set to running
         const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
@@ -31,7 +31,7 @@ class AppendBackend extends TimeoutTask {
         const memoizedGetHttp = Custom_Utilities.memoize(this.getHttp,cache);
         
         
-        const caseArray = this.mkCaseArray(formResponse,colMap);
+        const caseArray = this.mkCaseArray(formResponse,colMap,getType(formResponse,colMap));
         
         const requestOptions = {
             method: 'post',
