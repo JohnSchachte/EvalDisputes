@@ -12,6 +12,8 @@ class ApprovalTask extends CommonTask{
         const task = JSON.parse(this.taskKey);
         task.push(!message);
         task.push(new Date().toLocaleString());
+        
+        SpreadsheetApp.flush()
         this.ss.getSheetByName("Approval_Log").appendRow(task);
     }
 
@@ -50,11 +52,17 @@ class ApprovalTask extends CommonTask{
         const errorQueue = this.ss.getSheetByName("Errors");
         // apppend itself and all downstream processes
         const task = JSON.parse(this.taskKey);
+
+        SpreadsheetApp.flush();
         errorQueue.appendRow(task);
+
         Custom_Utilities.throttling(ScriptApp,"doErrors",60000); // throttle for a minute
         task.push(new Date().toLocaleString());// col 4 should be the date update column
         task.push(message);
+
+        SpreadsheetApp.flush();
         this.ss.getSheetByName("Error_Log").appendRow(task);
+
         Logger.log("OnFailure message = %s",message);
     }
 

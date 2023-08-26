@@ -11,7 +11,7 @@ class HasCoachingBackend extends ApprovalTask {
             
         const email = formResponse[colMap.get("Email Address")];
 
-        const checkFormResponse = this.checkFormResponse(formResponse,colMap,agentObj,email);
+        const checkFormResponse = this.checkFormResponse(formResponse,colMap);
         if(!checkFormResponse) return [email, "The form response is not valid. This could be an issue with Google please resubmit the form."];
         
         const hasBackend = OperationCoachingMembers.isInEmailSet(formResponse[colMap.get("Email Address")].toLowerCase());
