@@ -20,7 +20,7 @@ function sendEmail(recipients,subject,template){
 
 function deepFind (type, id){
   // Logger.log("searching deeper for id");
-  const values = Custom_Utilities.transpose(type === "phone" ? AgentEvaluationForm.getRecordIds() : AgentEvaluationForm.getChatIds());
+  const values = Custom_Utilities.transpose(type === "phone" ? AgentEvaluationForm.getCallIds() : AgentEvaluationForm.getChatIds());
   const result = AgentEvaluationForm.mkIdObjs(values)[id];
   // Logger.log(result)
   return result ? result.split("#") : result; // if false then result is null; have to done it like this or it will try to split a null value;
@@ -40,7 +40,7 @@ function getType(formResponse,colMap){
 
 function getEvalId(formResponse,colMap,name){
   const type = getType(formResponse,colMap);
-  return formResponse[colMap.get(type === "phone" ? "What is the Record Id for the Evaluation" : "What is the Chat Id for the Evaluation")] +name;
+  return formResponse[colMap.get(type === "phone" ? "What is the Id for the Evaluation" : "What is the Chat Id for the Evaluation")] +name;
 }
 
 function getIdObject(formResponse,colMap,type,name){

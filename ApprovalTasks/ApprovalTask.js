@@ -57,4 +57,9 @@ class ApprovalTask extends CommonTask{
         this.ss.getSheetByName("Error_Log").appendRow(task);
         Logger.log("OnFailure message = %s",message);
     }
+
+    checkFormResponse(formResponse,colMap){
+      Logger.log("checking form response: %s",(formResponse[colMap.get("What is the Id for the Evaluation")] || formResponse[colMap.get("What is the Chat Id for the Evaluation")]) && formResponse[colMap.get("Do you have a Ticket Number?")])
+      return (formResponse[colMap.get("What is the Id for the Evaluation")] || formResponse[colMap.get("What is the Chat Id for the Evaluation")]) && formResponse[colMap.get("Do you have a Ticket Number?")] 
+    }
 }

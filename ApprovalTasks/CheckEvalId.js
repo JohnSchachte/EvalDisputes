@@ -9,7 +9,12 @@ class CheckEvalId extends ApprovalTask {
     // if true then the state has been set to running
     
     const [formResponse,colMap] = this.getFormResponseAndMap(); // gets the form response row and the column map of headers
+    
     const email = formResponse[colMap.get("Email Address")];
+    
+    const checkFormResponse = this.checkFormResponse(formResponse,colMap);
+    if(!checkFormResponse) return [email, "The form response is not valid. This could be an issue with Google please resubmit the form."];
+    
     const agentObj = EmailToWFM.getAgentObj(email);
     if(!agentObj){
       return "skipped";
@@ -19,7 +24,7 @@ class CheckEvalId extends ApprovalTask {
     false : 
     [
       email,
-      `The Eval Id (${formResponse[colMap.get(getType(formResponse,colMap) === "phone" ? "What is the Record Id for the Evaluation" : "What is the Chat Id for the Evaluation")]}) you submitted does not appear in our records or does not appear to be an evaluation about you.\n`
+      `The Eval Id (${formResponse[colMap.get(getType(formResponse,colMap) === "phone" ? "What is the Id for the Evaluation" : "What is the Chat Id for the Evaluation")]}) you submitted does not appear in our records or does not appear to be an evaluation about you.\n`
     ];
   }
 }
