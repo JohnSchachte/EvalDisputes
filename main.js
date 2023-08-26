@@ -1,42 +1,44 @@
 function initializeProcessRunning(e){
   const jobName = "checkEvalId";
-  const formId = e ? e.range.rowStart : "157";
+  const formId = e ? e.range.rowStart : "157";//adjust to rerun the row
   new Storage().set(formId+"state","running");
 }
 
 function startDenial(e){
   const jobName = "sendDenied";
-  const formId = e ? e.range.rowStart : "167"
+  const formId = e ? e.range.rowStart : "167"; //adjust to rerun the row
   initializeStarts(formId,jobName);
 }
 
 function startCheckEval(e){
+  // start point
   const jobName = "checkEvalId";
-  const formId = e ? e.range.rowStart : "167";
+  const formId = e ? e.range.rowStart : "167"; //adjust to rerun the row
   initializeStarts(formId+'',jobName);
 }
 
 function startHasBackend(e){
+  // start point
   const jobName = "hasCoachingBackend";
-  const formId = e ? e.range.rowStart : "41";
+  const formId = e ? e.range.rowStart : "167"; //adjust this value to rerun the row
   initializeStarts(formId+'',jobName);
 }
 
 function startSendApproval(e){
   const jobName = "sendApproval";
-  const formId = e ? e.range.rowStart : 5;
+  const formId = e ? e.range.rowStart : "5"; //adjust to rerun the row
   initializeStarts(formId+'',jobName)
 }
 
 function startAppendBackend(e){
   const jobName = "appendBackend";
-  const formId = e ? e.range.rowStart : "157";
+  const formId = e ? e.range.rowStart : "157"; //adjust to rerun the row
   initializeStarts(formId+'',jobName)
 }
 
 function startSendManagement(e){
   const jobName = "sendManagementEmail";
-  const formId = e ? e.range.rowStart : 5;
+  const formId = e ? e.range.rowStart : "5"; //adjust to rerun the row
   initializeStarts(formId+'',jobName)
 }
 
